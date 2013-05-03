@@ -5,13 +5,19 @@
 #include <functional>
 #include <algorithm>
 #include <fstream>
+//rondom
 #include <ctime>
 #include <random>
 #include "random.hpp"
+//multi threading
+#include <mutex>
+#include <thread>
+
+
 
 #include <iostream>
 
-extern std::default_random_engine generator;
+class GeneticEngine;
 
 /* T = class Individu */
 template <class T>
@@ -47,6 +53,7 @@ class GeneticThread
 
 
     private:
+        friend class GeneticEngine;
         T** individus;
         const int size;
         const float mutation_taux;
@@ -57,6 +64,9 @@ class GeneticThread
         /* eval all the population */
         template <typename ... Args>
         void init(Args& ... args);
+
+        std::mutex mutex;
+        std::thread thread;
 
         /* sort the pop
         *  make children using T.crossOver(const T& other) + childre.mutate()

@@ -1,3 +1,5 @@
+extern std::default_random_engine generator;
+
 /* return *x>*y */
 template <typename T>
 struct gt_ptr : std::binary_function<T,T,bool>
