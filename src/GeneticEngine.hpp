@@ -16,6 +16,9 @@ class GeneticEngine
         
     private:
         GeneticThread<T>* islands;
+        int size;
+
+        void Wait();
 };
 
 #include "GeneticEngine.tpl"

@@ -1,6 +1,9 @@
 #include <utility>
 #include <thread>
 
+#include <thread>
+#include <chrono>
+
 template<class C,typename ... Args>
 void thread_method(C* obj,void(C::*func)(Args& ...),Args& ... args)
 {
@@ -21,7 +24,20 @@ T* GeneticEngine<T>::run(const int nb_generation,const int size_enf,Args& ... ar
 {
     for(int i=0;i<size;++i)
         islands[i].thread= std::thread(thread_method<GeneticThread>,&islands[i],&GeneticThread::run);
-
-    for(int i=0;i<size;++i)
-        islands[i].thread.join();
+    Wait();
 };
+
+template<class T>
+{
+    bool end=false;
+    while(not end)
+    { 
+        end = false;
+        for(int i=0;i<size and not end ;++i)
+            end = islands[i].thread.joinable();
+
+        if (end)
+            break;
+         std::this_thread::sleep_for(std::chrono::std::chrono::milliseconds(100));
+    }
+}
