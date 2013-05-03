@@ -28,6 +28,7 @@ T* GeneticEngine<T>::run(const int nb_generation,const int size_enf,Args& ... ar
 };
 
 template<class T>
+void GeneticEngine<T>::Wait()
 {
     bool end=false;
     while(not end)
