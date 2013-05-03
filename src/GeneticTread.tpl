@@ -7,7 +7,7 @@ struct gt_ptr : std::binary_function<T,T,bool>
 
 template <typename T>
 template <typename ... Args>
-GenetiqueEngine<T>::GenetiqueEngine(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename)
+GeneticThread<T>::GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename)
 {
     individus = new T*[pop_size];
     for(int i=0;i<pop_size;++i)
@@ -17,7 +17,7 @@ GenetiqueEngine<T>::GenetiqueEngine(float taux_mut,int tranche_mut,std::string f
 };
 
 template <typename T>
-GenetiqueEngine<T>::~GenetiqueEngine()
+GeneticThread<T>::~GeneticThread()
 {
     for(int i=0;i<size;++i)
         if(individus[i])
@@ -27,7 +27,7 @@ GenetiqueEngine<T>::~GenetiqueEngine()
 
 template <typename T>
 template <typename ... Args>
-T* GenetiqueEngine<T>::run(const int nb_generation,const int size_enf,Args& ... args)
+T* GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... args)
 {
     //eval initiale
     init(args ...);
@@ -39,7 +39,7 @@ T* GenetiqueEngine<T>::run(const int nb_generation,const int size_enf,Args& ... 
 
 template <typename T>
 template <typename ... Args>
-T* GenetiqueEngine<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
+T* GeneticThread<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
 {
     //eval initiale
     init(args ...);
@@ -53,7 +53,7 @@ T* GenetiqueEngine<T>::run_while(bool (*f)(const T&,Args& ...),const int size_en
 
 template <typename T>
 template <typename ... Args>
-void GenetiqueEngine<T>::init(Args& ... args)
+void GeneticThread<T>::init(Args& ... args)
 {
     for(int i=0;i<size;++i)
         individus[i]->eval(args...);
@@ -61,7 +61,7 @@ void GenetiqueEngine<T>::init(Args& ... args)
 
 template <typename T>
 template <typename ... Args>
-void GenetiqueEngine<T>::corps(const int size_enf,Args& ... args)
+void GeneticThread<T>::corps(const int size_enf,Args& ... args)
 {
     std::partial_sort(individus,individus+(size-size_enf),individus+size,gt_ptr<T>());//en tri les size - size_enf
     //creation des enfants + evaluation
@@ -107,7 +107,7 @@ void GenetiqueEngine<T>::corps(const int size_enf,Args& ... args)
 };
 
 template <typename T>
-T* GenetiqueEngine<T>::end()
+T* GeneticThread<T>::end()
 {
     std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_enf
     //on renvoi le meilleur
@@ -118,7 +118,7 @@ T* GenetiqueEngine<T>::end()
 };
 
 template <typename T>
-void GenetiqueEngine<T>::save(const std::string& name)
+void GeneticThread<T>::save(const std::string& name)
 {
     std::string filename("best/"+prefix+"_"+name+".res");
     if(not std::ifstream(filename))

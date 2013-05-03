@@ -1,5 +1,5 @@
-#ifndef GENETIQUEENGINE_HPP
-#define GENETIQUEENGINE_HPP
+#ifndef GENETICTHREAD_HPP
+#define GENETICTHREAD_HPP
 
 #include <utility>
 #include <functional>
@@ -15,7 +15,7 @@ extern std::default_random_engine generator;
 
 /* T = class Individu */
 template <class T>
-class GenetiqueEngine
+class GeneticThread
 {
     public:
     /* taux_mut = mutation rate [0 .. 1]
@@ -24,9 +24,9 @@ class GenetiqueEngine
     *  pop_size = size of the population
     *  Args ... = argument to T(Args& ... args ) constructor */
         template <typename ... Args>
-        GenetiqueEngine(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args);
+        GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args);
 
-        ~GenetiqueEngine();
+        ~GeneticThread();
 
         /*return the best (greater score)
         * you have to delete it yourself
@@ -76,5 +76,5 @@ class GenetiqueEngine
         void save(const std::string& name);
 };
 
-#include "GenetiqueEngine.tpl"
+#include "GeneticThread.tpl"
 #endif
