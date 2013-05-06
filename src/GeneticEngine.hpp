@@ -15,10 +15,7 @@ class GeneticEngine
         T* run(const int nb_generation,const int size_enf,Args& ... args);
 
         template <typename ... Args>
-        T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
-        {
-            std::thread(&GeneticThread<T>::func,islands[0],f,size_enf,args ...);
-        }
+        T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args);
         
     private:
         GeneticThread<T>** islands;

@@ -52,10 +52,10 @@ class GeneticThread
 
         T* get_best()const {return individus[0];};
 
-        template <typename ... Args>
+        /*template <typename ... Args>
         void func(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
         {
-        };
+        };*/
         
 
 
