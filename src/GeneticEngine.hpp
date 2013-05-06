@@ -18,7 +18,9 @@ class GeneticEngine
         T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args);
         
     private:
-        GeneticThread<T>* islands;
+        GeneticThread<T>** islands;
+        void send();
+        void send(T* id,GeneticThread<T>& dest);
         int size;
 
         void Wait();
