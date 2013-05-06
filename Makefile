@@ -11,7 +11,7 @@ export OBJ_DIR = $(TOP)/obj
 SRC = $(wildcard *.c*)
 OBJ = $(SRC:.cpp=.o) $(SRC:*.cpp=.o)
 
-SUBDIRS = obj src
+SUBDIRS = src obj
 
 export EXEC = main.exe
 

@@ -7,7 +7,7 @@ class Individu
 {
     public:
         Individu(): score(0), _size(0) {};
-        ~Individu();
+        ~Individu(){};
         /* change current individu */
         void mutate();
         /* create a new Individu with 2 others */
@@ -28,7 +28,7 @@ class Individu
         };
 
 
-        bool operator>(const IndividuTree& other)const
+        bool operator>(const Individu& other)const
         {
             return (this->score == other.score)?this->size()<other.size():this->score > other.score;
         };

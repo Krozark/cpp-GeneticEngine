@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-class GeneticEngine;
+//template <class T> class GeneticEngine;
 
 /* T = class Individu */
 template <class T>
@@ -53,7 +53,7 @@ class GeneticThread
 
 
     private:
-        friend class GeneticEngine;
+        //friend class GeneticEngine<T>;
         T** individus;
         const int size;
         const float mutation_taux;
