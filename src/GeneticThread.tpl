@@ -11,20 +11,22 @@ template <typename T>
 template <typename ... Args>
 GeneticThread<T>::GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename)
 {
+    mutex.lock();
     individus = new T*[pop_size];
     for(int i=0;i<pop_size;++i)
     {
         individus[i] = new T(std::forward<Args>(args) ...);
     }
+    mutex.unlock();
 };
 
 template <typename T>
 GeneticThread<T>::~GeneticThread()
 {
-    for(int i=0;i<size;++i)
+    for(int i=1;i<size;++i)
         if(individus[i])
             delete individus[i];
-    delete individus;
+    delete [] individus;
 };
 
 template <typename T>
@@ -57,14 +59,17 @@ template <typename T>
 template <typename ... Args>
 void GeneticThread<T>::init(Args& ... args)
 {
+    mutex.lock();
     for(int i=0;i<size;++i)
         individus[i]->eval(args...);
+    mutex.unlock();
 };
 
 template <typename T>
 template <typename ... Args>
 void GeneticThread<T>::corps(const int size_enf,Args& ... args)
 {
+    mutex.lock();
     std::partial_sort(individus,individus+(size-size_enf),individus+size,gt_ptr<T>());//en tri les size - size_enf
     //creation des enfants + evaluation
     T* enfants[size_enf];
@@ -101,6 +106,7 @@ void GeneticThread<T>::corps(const int size_enf,Args& ... args)
             individus[j]->mutate();
             individus[j]->eval(args ...);
         }
+    mutex.unlock();
 
     std::cout<<"generation #"<<generation++<<std::endl;
     #if GENETIQUE_SAVE_RESULTS
@@ -111,11 +117,13 @@ void GeneticThread<T>::corps(const int size_enf,Args& ... args)
 template <typename T>
 T* GeneticThread<T>::end()
 {
+    mutex.lock();
     std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_enf
     //on renvoi le meilleur
     T* res = individus[0];
     save("last");
     individus[0] = 0;
+    mutex.unlock();
     return res;
 };
 
@@ -144,6 +152,5 @@ void GeneticThread<T>::save(const std::string& name)
             <<"\n";
         file.close();
         std::cout<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
-
     }
 };
