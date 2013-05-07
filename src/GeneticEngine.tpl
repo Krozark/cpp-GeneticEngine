@@ -15,7 +15,7 @@ GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,int tranche_mut,st
 
     islands = new  GeneticThread<T>*[size];
     for(int i=0;i<size;++i)
-        islands[i] = new GeneticThread<T>(taux_mut,tranche_mut,filename,pop_size/size,std::forward<Args>(args)...);
+        islands[i] = new GeneticThread<T>(taux_mut,tranche_mut/size,filename,pop_size/size,std::forward<Args>(args)...);
 
 
 };
