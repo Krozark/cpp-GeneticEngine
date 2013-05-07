@@ -29,36 +29,48 @@ GeneticThread<T>::~GeneticThread()
     for(int i=1;i<size;++i)
         if(individus[i])
             delete individus[i];
-    delete [] individus;
+    delete individus;
 };
 
 template <typename T>
 template <typename ... Args>
 void GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... args)
 {
-    //eval initiale
-    init(args ...);
-    //boucle de génération
-    for(int generation=0;generation<nb_generation and running ;++generation)
-        corps(size_enf,args ...);
-    end();
+    //will be execute in thread
+    auto lambda = [&](int nb_generation,Args&... args)
+    {
+        //eval initiale
+        this->init(args ...);
+        //boucle de génération
+        for(int generation=0;generation<nb_generation and this->running ;++generation)
+            this->corps(size_enf,args ...);
+        this->end();
+    };
+
+    //lambda(nb_generation,args...);
+    //start thread
+    thread = std::thread(lambda,nb_generation,args...);
 };
 
 template <typename T>
 template <typename ... Args>
 void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),const int size_enf,Args& ... args)
 {
-    //eval initiale
 
-    auto lambda = [&](bool (*f)(const T&,Args& ... args),Args& ... args){
+    //will be execute in thread
+    auto lambda = [&](bool (*f)(const T&,Args& ... args),Args& ... args)
+    {
+        //eval initiale
         this->init(args ...);
         do
         {
             this->corps(size_enf,args ...);
+            //std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }while ((not f(*this->individus[0])) and this->running);
         this->end();
     };
 
+    //start thread
     thread = std::thread(lambda,f,args ...);
 };
 

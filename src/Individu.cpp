@@ -42,5 +42,11 @@ void Individu::eval()
 
 bool Individu::operator>(const Individu& other)const
 {
-    return (this->score == other.score)?this->size()<other.size():this->score > other.score;
+    if (score > other.score)
+        return true;
+
+    if (this->score == other.score)
+        return this->size()<other.size();
+
+    return false;
 };
