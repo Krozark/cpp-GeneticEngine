@@ -1,9 +1,8 @@
 export CC = g++
 INCPATH = 
-LIBS =
-#-lpthread 
+LIBS = -lpthread 
 #-lmysqlcppconn 
-export DEFINES = 
+export DEFINES = -DGENETIQUE_SAVE_RESULTS 
 export FLAGS = -g -std=c++0x $(INCPATH) $(LIBS) $(DEFINES)
 export TOP = $(CURDIR)
 export OBJ_DIR = $(TOP)/obj

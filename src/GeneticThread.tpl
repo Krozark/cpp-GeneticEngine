@@ -34,28 +34,32 @@ GeneticThread<T>::~GeneticThread()
 
 template <typename T>
 template <typename ... Args>
-T* GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... args)
+void GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... args)
 {
     //eval initiale
     init(args ...);
     //boucle de génération
     for(int generation=0;generation<nb_generation and running ;++generation)
         corps(size_enf,args ...);
-    return end();
+    end();
 };
 
 template <typename T>
-//template <typename ... Args>
-T* GeneticThread<T>::run_while(bool (*f)(const T&),const int size_enf/*,Args& ... args*/)
+template <typename ... Args>
+void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),const int size_enf,Args& ... args)
 {
     //eval initiale
-    this->init(/*args ...*/);
-    do
-    {
-        this->corps(size_enf/*,args ...*/);
-    }while (not f(*individus[0]) and this->running);
 
-    return end();
+    auto lambda = [&](bool (*f)(const T&,Args& ... args),Args& ... args){
+        this->init(args ...);
+        do
+        {
+            this->corps(size_enf,args ...);
+        }while ((not f(*this->individus[0])) and this->running);
+        this->end();
+    };
+
+    thread = std::thread(lambda,f,args ...);
 };
 
 template <typename T>
@@ -65,8 +69,8 @@ void GeneticThread<T>::init(Args& ... args)
     mutex.lock();
     for(int i=0;i<size;++i)
         individus[i]->eval(args...);
-    mutex.unlock();
     running = true;
+    mutex.unlock();
 };
 
 template <typename T>
@@ -112,24 +116,24 @@ void GeneticThread<T>::corps(const int size_enf,Args& ... args)
         }
     mutex.unlock();
 
-    std::cout<<"generation #"<<generation++<<std::endl;
+    std::cout<<"["<<thread.get_id()<<"] generation #"<<generation++<<std::endl;
     #if GENETIQUE_SAVE_RESULTS
         save(std::to_string(individus[0]->get_score()));
     #endif
 };
 
 template <typename T>
-T* GeneticThread<T>::end()
+void GeneticThread<T>::end()
 {
     mutex.lock();
     std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_enf
     //on renvoi le meilleur
     T* res = individus[0];
     save("last");
-    individus[0] = 0;
+    //individus[0] = 0;
     mutex.unlock();
     running = false;
-    return res;
+    //return res;
 };
 
 template <typename T>
@@ -156,7 +160,7 @@ void GeneticThread<T>::save(const std::string& name)
             <<"\n\tbest ="<<*individus[0]
             <<"\n";
         file.close();
-        std::cout<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
+        std::cout<<"["<<thread.get_id()<<"] "<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
     }
 };
 

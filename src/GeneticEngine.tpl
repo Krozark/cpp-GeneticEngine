@@ -35,33 +35,27 @@ template <class T>
 template <typename ... Args>
 T* GeneticEngine<T>::run_while(bool (*f)(const T&),const int size_enf,Args& ... args)
 {
-    std::cout<<"GeneticEngine::run_while() begin"<<std::endl;
     for(int i=0;i<size;++i)
-    {
-        islands[i]->thread = std::thread(GeneticThread<T>::run_while,islands[i],f,size_enf/*,args ..*/);
-        //islands[i]->run_while(f,size_enf/size,args ...);
-        //islands[i]->run_while(f,size_enf/size/*,args ...*/);
-    }
-    std::cout<<"GeneticEngine::run_while() end"<<std::endl;
+        islands[i]->run_while(f,size_enf/size,args ...);
     wait();
     return end();
 };
 
 
+
 template<class T>
 void GeneticEngine<T>::wait()
 {
-    bool end=false;
-    while(not end)
+    bool end;
+    do
     { 
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         end = false;
         for(int i=0;i<size and not end ;++i)
-            end = islands[i]->thread.joinable();
-
-        if (end)
-            break;
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            end = not islands[i]->thread.joinable() or not islands[i]->running;
+        std::cout<<end<<std::endl;
     }
+    while(not end);
 };
 
 
@@ -115,7 +109,7 @@ T* GeneticEngine<T>::end()
     {
         T* __best = islands[i]->get_best();
         if(__best > best)
-            swap(best,__best);
+            std::swap(best,__best);
         delete __best;
     }
     return best;

@@ -2,7 +2,8 @@
 
 Individu::Individu() : score(0), _size(0)
 {
-    x = random(0.f,10.f);
+    x = random(-10.f,10.f);
+    y = random(-10.f,10.f);
 };
 
 Individu::~Individu()
@@ -20,6 +21,8 @@ Individu* Individu::crossOver(Individu& other)
     Individu* res = new Individu();
     res->x = x;
     res->y = other.y;
+
+    return res;
 };
 
 Individu* Individu::clone()
@@ -27,6 +30,8 @@ Individu* Individu::clone()
     Individu* res = new Individu();
     res->x = x;
     res->y = y;
+
+    return res;
 };
 
 void Individu::eval()

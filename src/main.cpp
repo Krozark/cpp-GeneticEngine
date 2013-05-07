@@ -14,12 +14,13 @@ int main(int argc,char * argv[])
     int mutation_tranche = 100;
     int pop_child = pop_size*0.75;
 
-    int nb_threads = 2;
+    int nb_threads = 1;
 
     GeneticEngine<Individu> engine(nb_threads,mutation_taux,mutation_tranche,"filename",pop_size/*args to Individu constructor*/);
     bool (*stop)(const Individu&) = [](const Individu& best)
     {
-        return false;
+        static int i =0;
+        return i++ >= 1000;
     };
     Individu* best = engine.run_while(stop,pop_child);
     delete best;

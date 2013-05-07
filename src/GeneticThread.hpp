@@ -40,22 +40,18 @@ class GeneticThread
         * Args& ... args = argument to T.eval(Args& ... args)
         */
         template <typename ... Args>
-        T* run(const int nb_generation,const int size_enf,Args& ... args);
+        void run(const int nb_generation,const int size_enf,Args& ... args);
         
         /* return the best
         * you have to delete it youself
         * run until f return true
         * Args& .. args = argumebt to T.eval( ... args) AND f(T& best,Args& ... args)
         */
-        //template <typename ... Args>
-        T* run_while(bool (*f)(const T&),const int size_enf/*,Args& ... args*/);
+        
+        template <typename ... Args>
+        void run_while(bool (*f)(const T&,Args& ... args),const int size_enf,Args& ... args);
 
         T* get_best()const {return individus[0];};
-
-        /*template <typename ... Args>
-        void func(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
-        {
-        };*/
 
         inline void stop(){running=false;}
 
@@ -89,7 +85,7 @@ class GeneticThread
         *  save it in last.res file
         *  return the best
         */
-        T* end();
+        void end();
 
         /* save current best in file using << operator */
         void save(const std::string& name);
