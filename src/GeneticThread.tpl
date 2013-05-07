@@ -29,8 +29,11 @@ GeneticThread<T>::~GeneticThread()
 {
     for(int i=1;i<size;++i)
         if(individus[i])
+        {
             delete individus[i];
-    delete individus;
+            individus[i] = 0;
+        }
+    delete [] individus;
 };
 
 template <typename T>

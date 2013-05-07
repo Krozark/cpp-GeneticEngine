@@ -11,6 +11,8 @@ class GeneticEngine
         template <typename ... Args>
         GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args);
 
+        ~GeneticEngine();
+
         template <typename ... Args>
         T* run(const int nb_generation,Args& ... args);
 

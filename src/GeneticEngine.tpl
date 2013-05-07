@@ -23,6 +23,19 @@ GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filena
 
 };
 
+template<class T>
+GeneticEngine<T>::~GeneticEngine()
+{
+    /*for(int i=0;i<size;++i)
+        if(islands[i])
+        {
+            delete islands[i];
+            islands[i] = 0;
+        }
+        */
+    delete [] islands;
+};
+
 template <class T>
 template <typename ... Args>
 T* GeneticEngine<T>::run(const int nb_generation,Args& ... args)

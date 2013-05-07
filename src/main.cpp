@@ -21,7 +21,7 @@ int main(int argc,char * argv[])
         return false;
     };
     //Individu* best = engine.run_while(stop,pop_child);
-    Individu* best = engine.run(100000);
+    Individu* best = engine.run(100);
     delete best;
     return 0;
 }
