@@ -144,6 +144,7 @@ void GeneticThread<T>::end()
     mutex.unlock();
     running = false;
     //return res;
+    exit(0);
 };
 
 template <typename T>

@@ -26,13 +26,12 @@ GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filena
 template<class T>
 GeneticEngine<T>::~GeneticEngine()
 {
-    /*for(int i=0;i<size;++i)
+    for(int i=0;i<size;++i)
         if(islands[i])
         {
             delete islands[i];
             islands[i] = 0;
         }
-        */
     delete [] islands;
 };
 
@@ -85,7 +84,9 @@ void GeneticEngine<T>::stop()
 {
     running = false;
     for(int i=0;i<size;++i)
+    {
         islands[i]->stop();
+    }
 };
 
 template<class T>
@@ -119,6 +120,7 @@ void GeneticEngine<T>::send()
         //wait a moment for the other send
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+    exit(0);
 };
 
 template<class T>
