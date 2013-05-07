@@ -9,7 +9,7 @@ all: main.exe
 	@cp $@ "$(OBJ_DIR)"
 
 
-main.exe: main.cpp GeneticEngine.hpp GeneticThread.hpp Individu.hpp GeneticThread.o
+main.exe: main.cpp GeneticEngine.hpp GeneticThread.hpp Individu.o GeneticThread.o
 	$(CC) $^ $(FLAGS) -o $@
 
 
