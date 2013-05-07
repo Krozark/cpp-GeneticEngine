@@ -3,23 +3,20 @@
 #include <thread>
 #include <chrono>
 
+#include <iostream>
 
-template<class C,typename ... Args>
-void thread_method(C* obj,void (C::*func)(Args& ...),Args& ... args)
-{
-    (obj->*func)(args...);
-};
 
 template <class T>
 template <typename ... Args>
 GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(nb_threads)
 {
     if (size <= 0)
-        size = std::thread::hardware_concurrency();
+        size = std::thread::hardware_concurrency()-1;
 
     islands = new  GeneticThread<T>*[size];
     for(int i=0;i<size;++i)
         islands[i] = new GeneticThread<T>(taux_mut,tranche_mut,filename,pop_size/nb_threads,std::forward<Args>(args)...);
+
 
 };
 
@@ -27,22 +24,27 @@ template <class T>
 template <typename ... Args>
 T* GeneticEngine<T>::run(const int nb_generation,const int size_enf,Args& ... args)
 {
-    /*for(int i=0;i<size;++i)
-        islands[i]->thread= std::thread(thread_method<GeneticThread<T>>,islands[i],&GeneticThread<T>::run,nb_generation,size_enf,args ...);
-    wait();*/
-    return 0;
+    T* (GeneticThread<T>::*ptm)(bool (*)(T const&, Args&...), int, Args&...) = &GeneticThread<T>::run;
+    for(int i=0;i<size;++i)
+        islands[i]->thread= std::thread(ptm,islands[i],nb_generation,size_enf,args ...);
+    wait();
+    return end();
 };
 
 template <class T>
 template <typename ... Args>
-T* GeneticEngine<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
+T* GeneticEngine<T>::run_while(bool (*f)(const T&),const int size_enf,Args& ... args)
 {
-    T* (GeneticThread<T>::*ptm)(bool (*)(T const&, Args&...), int, Args&...) = &GeneticThread<T>::run_while;
-
+    std::cout<<"GeneticEngine::run_while() begin"<<std::endl;
     for(int i=0;i<size;++i)
-        islands[i]->thread= std::thread(ptm,islands[i],f,size_enf,args ...);
+    {
+        islands[i]->thread = std::thread(GeneticThread<T>::run_while,islands[i],f,size_enf/*,args ..*/);
+        //islands[i]->run_while(f,size_enf/size,args ...);
+        //islands[i]->run_while(f,size_enf/size/*,args ...*/);
+    }
+    std::cout<<"GeneticEngine::run_while() end"<<std::endl;
     wait();
-    return 0;
+    return end();
 };
 
 
@@ -89,7 +91,7 @@ void GeneticEngine<T>::send()
         GeneticThread<T>& src = *src_pt;
 
         src.mutex.lock();
-        send(src.individus[0]->clone(),*dest);
+        send(src.get_best()->clone(),*dest);
         src.mutex.unlock();
     }
 
@@ -102,4 +104,19 @@ void GeneticEngine<T>::send(T* id,GeneticThread<T>& dest)
     delete dest.individus[dest.size-1];
     dest.individus[dest.size-1] = dest;
     dest.mutex.unlock();
+};
+
+
+template<class T>
+T* GeneticEngine<T>::end()
+{
+    T* best = islands[0]->get_best();
+    for(int i=1;i<size;++i)
+    {
+        T* __best = islands[i]->get_best();
+        if(__best > best)
+            swap(best,__best);
+        delete __best;
+    }
+    return best;
 };

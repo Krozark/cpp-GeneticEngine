@@ -1,5 +1,8 @@
 extern std::default_random_engine generator;
 
+
+#include <iostream>
+
 /* return *x>*y */
 template <typename T>
 struct gt_ptr : std::binary_function<T,T,bool>
@@ -42,15 +45,15 @@ T* GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... ar
 };
 
 template <typename T>
-template <typename ... Args>
-T* GeneticThread<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
+//template <typename ... Args>
+T* GeneticThread<T>::run_while(bool (*f)(const T&),const int size_enf/*,Args& ... args*/)
 {
     //eval initiale
-    init(args ...);
+    this->init(/*args ...*/);
     do
     {
-        corps(size_enf,args ...);
-    }while (not f(*individus[0],args...) and running);
+        this->corps(size_enf/*,args ...*/);
+    }while (not f(*individus[0]) and this->running);
 
     return end();
 };
@@ -156,3 +159,4 @@ void GeneticThread<T>::save(const std::string& name)
         std::cout<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
     }
 };
+

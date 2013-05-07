@@ -17,11 +17,11 @@ int main(int argc,char * argv[])
     int nb_threads = 2;
 
     GeneticEngine<Individu> engine(nb_threads,mutation_taux,mutation_tranche,"filename",pop_size/*args to Individu constructor*/);
-    bool (*stop)(const Individu&/* Individu.eval args*/) = [](const Individu& best)
+    bool (*stop)(const Individu&) = [](const Individu& best)
     {
         return false;
     };
-    Individu* best = engine.run_while(stop,pop_child/* Individu.eval params*/);
+    Individu* best = engine.run_while(stop,pop_child);
     delete best;
     return 0;
 }

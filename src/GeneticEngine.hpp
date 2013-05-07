@@ -15,7 +15,7 @@ class GeneticEngine
         T* run(const int nb_generation,const int size_enf,Args& ... args);
 
         template <typename ... Args>
-        T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args);
+        T* run_while(bool (*f)(const T&),const int size_enf,Args& ... args);
 
         void stop();
         
@@ -26,6 +26,8 @@ class GeneticEngine
         int size;
 
         void wait();
+
+        T* end();
 };
 
 #include "GeneticEngine.tpl"

@@ -47,8 +47,8 @@ class GeneticThread
         * run until f return true
         * Args& .. args = argumebt to T.eval( ... args) AND f(T& best,Args& ... args)
         */
-        template <typename ... Args>
-        T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args);
+        //template <typename ... Args>
+        T* run_while(bool (*f)(const T&),const int size_enf/*,Args& ... args*/);
 
         T* get_best()const {return individus[0];};
 
