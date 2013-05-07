@@ -21,11 +21,16 @@ class GeneticEngine
         
     private:
         GeneticThread<T>** islands;
+        std::thread send_thread;
+        int size;
+        volatile bool running;
+
         void send();
         void send(T* id,GeneticThread<T>& dest);
-        int size;
+
 
         void wait();
+
 
         T* end();
 };

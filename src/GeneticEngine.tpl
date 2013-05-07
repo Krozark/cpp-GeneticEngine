@@ -46,49 +46,60 @@ T* GeneticEngine<T>::run_while(bool (*f)(const T&),const int size_enf,Args& ... 
 template<class T>
 void GeneticEngine<T>::wait()
 {
-    bool end;
+    running = true;
+    //sender thread
+    void (GeneticEngine<T>::*func)() = &GeneticEngine<T>::send;
+    std::thread thread(func,this);
     do
     { 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        end = false;
-        for(int i=0;i<size and not end ;++i)
-            end = not islands[i]->thread.joinable() or not islands[i]->running;
-        std::cout<<end<<std::endl;
+        running = true;
+        for(int i=0;i<size and running ;++i)
+            running = islands[i]->thread.joinable() and islands[i]->running;
     }
-    while(not end);
+    while(running);
+    //stop all islands
+    stop();
+    //wait the end of the sender thread
+    thread.join();
 };
 
 
 template<class T>
 void GeneticEngine<T>::stop()
 {
-    for(auto thread:islands)
-        thread->stop();
-    wait();
+    running = false;
+    for(int i=0;i<size;++i)
+        islands[i]->stop();
 };
 
 template<class T>
 void GeneticEngine<T>::send()
 {
-    if (size > 1)
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    while(running)
     {
-        GeneticThread<T>* dest = islands[random(0,size-1)];
-        GeneticThread<T>* src_pt;
-
-        do
+        if (size > 1)
         {
-            src_pt = islands[random(0,size-1)];
+            GeneticThread<T>* dest = islands[random(0,size-1)];
+            GeneticThread<T>* src_pt;
+
+            do
+            {
+                src_pt = islands[random(0,size-1)];
+            }
+            while(src_pt == dest);
+
+
+            GeneticThread<T>& src = *src_pt;
+
+            src.mutex.lock();
+            send(src.get_best()->clone(),*dest);
+            src.mutex.unlock();
         }
-        while(src_pt == dest);
-
-
-        GeneticThread<T>& src = *src_pt;
-
-        src.mutex.lock();
-        send(src.get_best()->clone(),*dest);
-        src.mutex.unlock();
+        //wait a moment for the other send
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-
 };
 
 template<class T>
@@ -96,7 +107,7 @@ void GeneticEngine<T>::send(T* id,GeneticThread<T>& dest)
 {
     dest.mutex.lock();
     delete dest.individus[dest.size-1];
-    dest.individus[dest.size-1] = dest;
+    dest.individus[dest.size-1] = id;
     dest.mutex.unlock();
 };
 
