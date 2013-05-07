@@ -11,18 +11,17 @@ int main(int argc,char * argv[])
 
     int pop_size = 1000;
     float mutation_taux = 0.05;
-    int mutation_tranche = 100;
     int pop_child = pop_size*0.75;
 
     int nb_threads = -1;
 
-    GeneticEngine<Individu> engine(nb_threads,mutation_taux,mutation_tranche,"filename",pop_size/*args to Individu constructor*/);
+    GeneticEngine<Individu> engine(nb_threads,mutation_taux,"filename",pop_size,pop_child/*args to Individu constructor*/);
     bool (*stop)(const Individu&) = [](const Individu& best)
     {
         return false;
     };
     //Individu* best = engine.run_while(stop,pop_child);
-    Individu* best = engine.run(100000,pop_child);
+    Individu* best = engine.run(100000);
     delete best;
     return 0;
 }

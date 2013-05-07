@@ -13,7 +13,7 @@ class Individu
         /* change current individu */
         void mutate();
         /* create a new Individu with 2 others */
-        Individu * crossOver(Individu& other);
+        Individu * crossOver(const Individu& other)const;
 
         Individu* clone();
         /* siple getters */

@@ -16,7 +16,7 @@ void Individu::mutate()
     y += random(-1.f,1.f);
 };
 
-Individu* Individu::crossOver(Individu& other)
+Individu* Individu::crossOver(const Individu& other) const
 {
     Individu* res = new Individu();
     res->x = x;

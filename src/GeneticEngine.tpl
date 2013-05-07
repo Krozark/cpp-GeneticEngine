@@ -8,34 +8,37 @@
 
 template <class T>
 template <typename ... Args>
-GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(nb_threads)
+GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args) : size(nb_threads)
 {
     if (size <= 0)
         size = std::thread::hardware_concurrency()-1;
+    if (size <= 0)
+        size = 1;
+
 
     islands = new  GeneticThread<T>*[size];
     for(int i=0;i<size;++i)
-        islands[i] = new GeneticThread<T>(taux_mut,tranche_mut/size,filename,pop_size/size,std::forward<Args>(args)...);
+        islands[i] = new GeneticThread<T>(taux_mut,filename,pop_size/size,pop_child/size,std::forward<Args>(args)...);
 
 
 };
 
 template <class T>
 template <typename ... Args>
-T* GeneticEngine<T>::run(const int nb_generation,const int size_enf,Args& ... args)
+T* GeneticEngine<T>::run(const int nb_generation,Args& ... args)
 {
     for(int i=0;i<size;++i)
-        islands[i]->run(nb_generation,size_enf/size,args ...);
+        islands[i]->run(nb_generation,args ...);
     wait();
     return end();
 };
 
 template <class T>
 template <typename ... Args>
-T* GeneticEngine<T>::run_while(bool (*f)(const T&),const int size_enf,Args& ... args)
+T* GeneticEngine<T>::run_while(bool (*f)(const T&),Args& ... args)
 {
     for(int i=0;i<size;++i)
-        islands[i]->run_while(f,size_enf/size,args ...);
+        islands[i]->run_while(f,args ...);
     wait();
     return end();
 };
@@ -75,7 +78,7 @@ void GeneticEngine<T>::stop()
 template<class T>
 void GeneticEngine<T>::send()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000/size));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     while(running)
     {
         if (size > 1)
@@ -101,7 +104,7 @@ void GeneticEngine<T>::send()
             send(best,*dest);
         }
         //wait a moment for the other send
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000/size));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 };
 

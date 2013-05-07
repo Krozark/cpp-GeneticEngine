@@ -12,14 +12,15 @@ struct gt_ptr : std::binary_function<T,T,bool>
 
 template <typename T>
 template <typename ... Args>
-GeneticThread<T>::GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename), running(false)
+GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix(filename), running(false)
 {
     mutex.lock();
-    individus = new T*[pop_size];
+    individus = new T*[pop_size+pop_child];
     for(int i=0;i<pop_size;++i)
     {
         individus[i] = new T(std::forward<Args>(args) ...);
     }
+    pop_child = pop_size;
     mutex.unlock();
 };
 
@@ -34,7 +35,7 @@ GeneticThread<T>::~GeneticThread()
 
 template <typename T>
 template <typename ... Args>
-void GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... args)
+void GeneticThread<T>::run(const int nb_generation,Args& ... args)
 {
     //will be execute in thread
     auto lambda = [&](int nb_generation,Args&... args)
@@ -43,7 +44,7 @@ void GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... 
         this->init(args ...);
         //boucle de génération
         for(int generation=0;generation<nb_generation and this->running ;++generation)
-            this->corps(size_enf,args ...);
+            this->corps(args ...);
         this->end();
     };
 
@@ -54,7 +55,7 @@ void GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... 
 
 template <typename T>
 template <typename ... Args>
-void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),const int size_enf,Args& ... args)
+void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),Args& ... args)
 {
 
     //will be execute in thread
@@ -64,7 +65,7 @@ void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),const int si
         this->init(args ...);
         do
         {
-            this->corps(size_enf,args ...);
+            this->corps(args ...);
             //std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }while ((not f(*this->individus[0])) and this->running);
         this->end();
@@ -87,45 +88,23 @@ void GeneticThread<T>::init(Args& ... args)
 
 template <typename T>
 template <typename ... Args>
-void GeneticThread<T>::corps(const int size_enf,Args& ... args)
+void GeneticThread<T>::corps(Args& ... args)
 {
     mutex.lock();
-    std::partial_sort(individus,individus+(size-size_enf),individus+size,gt_ptr<T>());//en tri les size - size_enf
+    std::partial_sort(individus,individus+(size-size_child),individus+size,gt_ptr<T>());//en tri les size - size_child
     //creation des enfants + evaluation
-    T* enfants[size_enf];
-    for(int i=0;i<size_enf;++i)//on prend que les meilleur, mais avec random
-    {
-        enfants[i] = individus[i]->crossOver(*individus[random(0,size-1)]);
-        if (random(0.f,1.f) > mutation_taux)//Mutation !
-        {
-            enfants[i]->mutate();
+    T* enfants[size_child];
+    for(int i=0;i<size_child;++i)//on prend que les meilleur, mais avec random
+        enfants[i] = makeNew(individus[i],*individus[random(0,size-1)]);
 
-            for (int j=100;j<enfants[i]->size();j+=100)
-                enfants[i]->mutate();
-        }
-
-        enfants[i]->eval(args...);
-    }
-    //on mélange un peu histoir d'aider les mauvais en gardant un bout des bon (quand même)...
-    const int borne = (size - size_enf)*0.85;
-    std::shuffle(individus+borne, individus+size-size_enf, generator);
 
     //réduction population
-    for(int i=0;i<size_enf;++i)
+    for(int i=0;i<size_child;++i)
     {
-        std::swap(individus[size-size_enf+i],enfants[i]);
+        std::swap(individus[size-size_child+i],enfants[i]);
         delete enfants[i];
     }
 
-    //evite de trop stagner
-
-    if(mutation_taux > 0)
-        for(int i=0;i<size;i+=mutation_tranche)
-        {
-            int j = random(1,size-1);
-            individus[j]->mutate();
-            individus[j]->eval(args ...);
-        }
     mutex.unlock();
 
     std::cout<<"["<<thread.get_id()<<"] generation #"<<generation++<<std::endl;
@@ -134,11 +113,27 @@ void GeneticThread<T>::corps(const int size_enf,Args& ... args)
     #endif
 };
 
+
+template<class T>
+T* GeneticThread<T>::makeNew(const T* parent1,const T& parent2)
+{
+    T* res = parent1->crossOver(parent2);
+    if (random(0.f,1.f) < mutation_taux)//Mutation !
+    {
+        res->mutate();
+
+        for (int j=100;j<res->size();j+=100) //mutation proportianal to his size
+            res->mutate();
+    }
+
+    return res;
+};
+
 template <typename T>
 void GeneticThread<T>::end()
 {
     mutex.lock();
-    std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_enf
+    std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_child
     //on renvoi le meilleur
     T* res = individus[0];
     save("last");

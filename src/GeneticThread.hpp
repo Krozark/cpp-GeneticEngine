@@ -25,12 +25,12 @@ class GeneticThread
 {
     public:
     /* taux_mut = mutation rate [0 .. 1]
-    *  tranche_mut = mutate a individue each pop_size/tranche_mut
     *  filename = where the output have to be save
     *  pop_size = size of the population
+    *  size_child = number of child
     *  Args ... = argument to T(Args& ... args ) constructor */
         template <typename ... Args>
-        GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args);
+        GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args);
 
         ~GeneticThread();
 
@@ -40,7 +40,7 @@ class GeneticThread
         * Args& ... args = argument to T.eval(Args& ... args)
         */
         template <typename ... Args>
-        void run(const int nb_generation,const int size_enf,Args& ... args);
+        void run(const int nb_generation,Args& ... args);
         
         /* return the best
         * you have to delete it youself
@@ -49,7 +49,7 @@ class GeneticThread
         */
         
         template <typename ... Args>
-        void run_while(bool (*f)(const T&,Args& ... args),const int size_enf,Args& ... args);
+        void run_while(bool (*f)(const T&,Args& ... args),Args& ... args);
 
         T* get_best()const {return individus[0];};
 
@@ -60,8 +60,9 @@ class GeneticThread
         friend class GeneticEngine<T>;
         T** individus;
         const int size;
+        const int size_child;
+        int pop_cursor;
         const float mutation_taux;
-        const int mutation_tranche;
         int generation;
         const std::string prefix;
         
@@ -76,10 +77,14 @@ class GeneticThread
         /* sort the pop
         *  make children using T.crossOver(const T& other) + childre.mutate()
         *  remove worst and replace them with childrens
-        *  eache.mutate() [mutation_tranche]
         */
         template <typename ... Args>
-        void corps(const int size_enf,Args& ... args);
+        void corps(Args& ... args);
+
+        /* create a new T using parent1 & 2
+         * It use crossover, and mutate internatly
+         */
+        T* makeNew(const T* parent1,const T& parent2);
 
         /* At the end:
         *  save it in last.res file
