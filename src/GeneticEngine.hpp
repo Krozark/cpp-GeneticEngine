@@ -16,6 +16,8 @@ class GeneticEngine
 
         template <typename ... Args>
         T* run_while(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args);
+
+        void stop();
         
     private:
         GeneticThread<T>** islands;
@@ -23,7 +25,7 @@ class GeneticEngine
         void send(T* id,GeneticThread<T>& dest);
         int size;
 
-        void Wait();
+        void wait();
 };
 
 #include "GeneticEngine.tpl"

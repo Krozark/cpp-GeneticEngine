@@ -9,7 +9,7 @@ struct gt_ptr : std::binary_function<T,T,bool>
 
 template <typename T>
 template <typename ... Args>
-GeneticThread<T>::GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename)
+GeneticThread<T>::GeneticThread(float taux_mut,int tranche_mut,std::string filename,int pop_size,Args& ... args) : size(pop_size), mutation_taux(1-taux_mut), mutation_tranche(tranche_mut) , generation(0), prefix(filename), running(false)
 {
     mutex.lock();
     individus = new T*[pop_size];
@@ -36,7 +36,7 @@ T* GeneticThread<T>::run(const int nb_generation,const int size_enf,Args& ... ar
     //eval initiale
     init(args ...);
     //boucle de génération
-    for(int generation=0;generation<nb_generation;++generation)
+    for(int generation=0;generation<nb_generation and running ;++generation)
         corps(size_enf,args ...);
     return end();
 };
@@ -50,7 +50,7 @@ T* GeneticThread<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,
     do
     {
         corps(size_enf,args ...);
-    }while (not f(*individus[0],args...));
+    }while (not f(*individus[0],args...) and running);
 
     return end();
 };
@@ -63,6 +63,7 @@ void GeneticThread<T>::init(Args& ... args)
     for(int i=0;i<size;++i)
         individus[i]->eval(args...);
     mutex.unlock();
+    running = true;
 };
 
 template <typename T>
@@ -124,6 +125,7 @@ T* GeneticThread<T>::end()
     save("last");
     individus[0] = 0;
     mutex.unlock();
+    running = false;
     return res;
 };
 

@@ -29,7 +29,7 @@ T* GeneticEngine<T>::run(const int nb_generation,const int size_enf,Args& ... ar
 {
     /*for(int i=0;i<size;++i)
         islands[i]->thread= std::thread(thread_method<GeneticThread<T>>,islands[i],&GeneticThread<T>::run,nb_generation,size_enf,args ...);
-    Wait();*/
+    wait();*/
     return 0;
 };
 
@@ -41,13 +41,13 @@ T* GeneticEngine<T>::run_while(bool (*f)(const T&,Args& ...),const int size_enf,
 
     for(int i=0;i<size;++i)
         islands[i]->thread= std::thread(ptm,islands[i],f,size_enf,args ...);
-    Wait();
+    wait();
     return 0;
 };
 
 
 template<class T>
-void GeneticEngine<T>::Wait()
+void GeneticEngine<T>::wait()
 {
     bool end=false;
     while(not end)
@@ -60,6 +60,15 @@ void GeneticEngine<T>::Wait()
             break;
          std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+};
+
+
+template<class T>
+void GeneticEngine<T>::stop()
+{
+    for(auto thread:islands)
+        thread->stop();
+    wait();
 };
 
 template<class T>

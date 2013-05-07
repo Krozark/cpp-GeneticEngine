@@ -56,7 +56,8 @@ class GeneticThread
         void func(bool (*f)(const T&,Args& ...),const int size_enf,Args& ... args)
         {
         };*/
-        
+
+        inline void stop(){running=false;}
 
 
     private:
@@ -74,6 +75,7 @@ class GeneticThread
 
         std::mutex mutex;
         std::thread thread;
+        volatile bool running;
 
         /* sort the pop
         *  make children using T.crossOver(const T& other) + childre.mutate()
