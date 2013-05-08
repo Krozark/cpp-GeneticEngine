@@ -56,7 +56,6 @@ class GeneticThread
         inline void stop(){running=false;}
 
 
-
     private:
         friend class GeneticEngine<T>;
         T** individus;
@@ -70,6 +69,8 @@ class GeneticThread
         void (GeneticThread<T>::*creatChildFunc)();
         /* Fonction to call to  reduce pop */
         void (GeneticThread<T>::*reducePopFunc)();
+
+        bool initial_evaluation_req;
 
 
         /*************** FONCTIONS *******************/

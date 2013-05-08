@@ -25,6 +25,7 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
     /***** init fonction to use *********/
     creatChildFunc = &GeneticThread<T>::stupideCreation;
     reducePopFunc = &GeneticThread<T>::stupidReduction;
+    initial_evaluation_req = true;
 
     mutex.unlock();
 };
@@ -88,8 +89,11 @@ template <typename ... Args>
 void GeneticThread<T>::init(Args& ... args)
 {
     mutex.lock();
+    if(initial_evaluation_req)
+    {
     for(int i=0;i<size;++i)
         individus[i]->eval(args...);
+    }
     running = true;
     mutex.unlock();
 };
@@ -102,6 +106,13 @@ void GeneticThread<T>::corps(Args& ... args)
     
     // creat children
     (this->*creatChildFunc)();
+
+    if(initial_evaluation_req)
+        for(int i=0;i<size_child;++i)
+        {
+            int c = size+i;
+            individus[c]->eval(args...);
+        }
     //reduce pop
     (this->*reducePopFunc)();
 
@@ -173,18 +184,32 @@ void GeneticThread<T>::save(const std::string& name)
 };
 
 /******************** CUSTOM FONCTION **********************/
-
+//creation
 template<class T>
 void GeneticThread<T>::stupideCreation()
 {
     //en tri les size - size_child
     std::partial_sort(individus,individus+(size-size_child),individus+size,gt_ptr<T>());
-    //creation des enfants + evaluation
-    for(int i=0;i<size_child;++i)//on prend que les meilleur, mais avec random
-        individus[size+i] = makeNew(individus[i],*individus[random(0,size-1)]);
+    //creation des enfants
+    for(int i=0;i<size_child;++i)
+    {
+        int c = size+i;
+        //on prend que les meilleurs, mais avec random
+        individus[c] = makeNew(individus[i],*individus[random(0,size-1)]);
+    }
+    initial_evaluation_req = true;
+};
+
+template<class T>
+void GeneticThread<T>::tournamentCreation()
+{
+    for(int i=0;i<size_child;++i)
+    {
+    }
 };
 
 
+//reduction
 template<class T>
 void GeneticThread<T>::stupidReduction()
 {
@@ -197,4 +222,8 @@ void GeneticThread<T>::stupidReduction()
     }
 };
 
+template <class T>
+void GeneticThread<T>::tournamentReduction()
+{
+};
 
