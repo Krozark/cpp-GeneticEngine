@@ -56,6 +56,7 @@ class GeneticThread
         inline void stop(){running=false;}
 
 
+
     private:
         friend class GeneticEngine<T>;
         T** individus;
@@ -65,6 +66,11 @@ class GeneticThread
         const float mutation_taux;
         int generation;
         const std::string prefix;
+        /* Fonction to call to create childre */
+        void (GeneticThread::*creatChildFunc)();
+
+
+        /*************** FONCTIONS *******************/
         
         /* eval all the population */
         template <typename ... Args>
@@ -94,6 +100,12 @@ class GeneticThread
 
         /* save current best in file using << operator */
         void save(const std::string& name);
+
+
+        /********** CREATIONS *****************/
+        void stupideCreation();
+
+
 };
 
 #include "GeneticThread.tpl"

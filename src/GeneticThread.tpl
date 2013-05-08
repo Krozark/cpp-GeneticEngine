@@ -21,6 +21,10 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
         individus[i] = new T(std::forward<Args>(args) ...);
     }
     pop_child = pop_size;
+
+    /***** init fonction to use *********/
+    creatChildFunc = &GeneticThread<T>::stupideCreation;
+
     mutex.unlock();
 };
 
@@ -94,18 +98,14 @@ template <typename ... Args>
 void GeneticThread<T>::corps(Args& ... args)
 {
     mutex.lock();
-    std::partial_sort(individus,individus+(size-size_child),individus+size,gt_ptr<T>());//en tri les size - size_child
-    //creation des enfants + evaluation
-    T* enfants[size_child];
-    for(int i=0;i<size_child;++i)//on prend que les meilleur, mais avec random
-        enfants[i] = makeNew(individus[i],*individus[random(0,size-1)]);
 
+    (this->*creatChildFunc)();
 
     //réduction population
     for(int i=0;i<size_child;++i)
     {
-        std::swap(individus[size-size_child+i],enfants[i]);
-        delete enfants[i];
+        std::swap(individus[size-size_child+i],individus[size+i]);
+        delete individus[size+i];
     }
 
     mutex.unlock();
@@ -173,5 +173,16 @@ void GeneticThread<T>::save(const std::string& name)
         file.close();
         std::cout<<"["<<thread.get_id()<<"] "<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
     }
+};
+
+
+template<class T>
+void GeneticThread<T>::stupideCreation()
+{
+    //en tri les size - size_child
+    std::partial_sort(individus,individus+(size-size_child),individus+size,gt_ptr<T>());
+    //creation des enfants + evaluation
+    for(int i=0;i<size_child;++i)//on prend que les meilleur, mais avec random
+        individus[size+i] = makeNew(individus[i],*individus[random(0,size-1)]);
 };
 
