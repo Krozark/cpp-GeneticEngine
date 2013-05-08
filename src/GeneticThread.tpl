@@ -24,6 +24,7 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
 
     /***** init fonction to use *********/
     creatChildFunc = &GeneticThread<T>::stupideCreation;
+    reducePopFunc = &GeneticThread<T>::stupidReduction;
 
     mutex.unlock();
 };
@@ -98,15 +99,11 @@ template <typename ... Args>
 void GeneticThread<T>::corps(Args& ... args)
 {
     mutex.lock();
-
+    
+    // creat children
     (this->*creatChildFunc)();
-
-    //réduction population
-    for(int i=0;i<size_child;++i)
-    {
-        std::swap(individus[size-size_child+i],individus[size+i]);
-        delete individus[size+i];
-    }
+    //reduce pop
+    (this->*reducePopFunc)();
 
     mutex.unlock();
 
@@ -175,6 +172,7 @@ void GeneticThread<T>::save(const std::string& name)
     }
 };
 
+/******************** CUSTOM FONCTION **********************/
 
 template<class T>
 void GeneticThread<T>::stupideCreation()
@@ -185,4 +183,18 @@ void GeneticThread<T>::stupideCreation()
     for(int i=0;i<size_child;++i)//on prend que les meilleur, mais avec random
         individus[size+i] = makeNew(individus[i],*individus[random(0,size-1)]);
 };
+
+
+template<class T>
+void GeneticThread<T>::stupidReduction()
+{
+    for(int i=0;i<size_child;++i)
+    {
+        int c = size+i;
+        std::swap(individus[size-size_child+i],individus[c]);
+        delete individus[c];
+        individus[c] = 0;
+    }
+};
+
 

@@ -66,8 +66,10 @@ class GeneticThread
         const float mutation_taux;
         int generation;
         const std::string prefix;
-        /* Fonction to call to create childre */
-        void (GeneticThread::*creatChildFunc)();
+        /* Fonction to call to create children */
+        void (GeneticThread<T>::*creatChildFunc)();
+        /* Fonction to call to  reduce pop */
+        void (GeneticThread<T>::*reducePopFunc)();
 
 
         /*************** FONCTIONS *******************/
@@ -104,6 +106,11 @@ class GeneticThread
 
         /********** CREATIONS *****************/
         void stupideCreation();
+        void tournamentCreation();
+
+        /********** REDUCTION *******************/
+        void stupidReduction();
+        void tournamentReduction();
 
 
 };
