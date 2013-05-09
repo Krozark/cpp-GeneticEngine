@@ -47,7 +47,7 @@ class GeneticThread
         
         void run_while(bool (*f)(const T&));
 
-        T* get_best()const {return individus[0];};
+        T* get_best()const {return best;};
 
         inline void stop(){running=false;}
 
@@ -76,6 +76,8 @@ class GeneticThread
 
         bool initial_evaluation_req;
 
+        T* best;
+
 
         /*************** FONCTIONS *******************/
         
@@ -99,7 +101,6 @@ class GeneticThread
 
         /* At the end:
         *  save it in last.res file
-        *  return the best
         */
         void end();
 

@@ -234,10 +234,10 @@ void GeneticThread<T>::tournamentCreation()
     {
         //random individus
         T* id_rand[7];
-        for(int i=0;i<7,++i)
+        for(int i=0;i<7;++i)
         {
             id_rand[i] = individus[random(0,size-1)];
-            if(id_rand[i]->need_eval())
+            if(not initial_evaluation_req and id_rand[i]->need_eval())
                 id_rand[i]->eval();
 
         }
