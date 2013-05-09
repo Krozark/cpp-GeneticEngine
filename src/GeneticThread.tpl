@@ -23,9 +23,8 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
     pop_child = pop_size;
 
     /***** init fonction to use *********/
-    creatChildFunc = &GeneticThread<T>::stupideCreation;
-    reducePopFunc = &GeneticThread<T>::stupidReduction;
-    initial_evaluation_req = true;
+    setCreationMode(CreationMode::STUPIDE);
+    setReductionMode(ReductionMode::STUPIDE);
 
     mutex.unlock();
 };
@@ -33,8 +32,8 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
 template <typename T>
 GeneticThread<T>::~GeneticThread()
 {
-    for(int i=1;i<size;++i)
-        if(individus[i])
+    for(int i=0;i<size;++i)
+        if(individus[i] and individus[i] != best)
         {
             delete individus[i];
             individus[i] = 0;
@@ -43,76 +42,70 @@ GeneticThread<T>::~GeneticThread()
 };
 
 template <typename T>
-//template <typename ... Args>
-void GeneticThread<T>::run(const int nb_generation/*,Args& ... args*/)
+void GeneticThread<T>::run(const int nb_generation)
 {
     //will be execute in thread
-    auto lambda = [&](int nb_generation/*,Args&... args*/)
+    auto lambda = [&](int nb_generation)
     {
         //eval initiale
-        this->init(/*args ...*/);
+        this->init();
         //boucle de génération
         for(int generation=0;generation<nb_generation and this->running ;++generation)
-            this->corps(/*args ...*/);
+            this->corps();
         this->end();
     };
 
-    //lambda(nb_generation,args...);
     //start thread
-    thread = std::thread(lambda,nb_generation/*,args...*/);
+    thread = std::thread(lambda,nb_generation);
 };
 
 template <typename T>
-//template <typename ... Args>
-void GeneticThread<T>::run_while(bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/)
+void GeneticThread<T>::run_while(bool (*f)(const T&))
 {
 
     //will be execute in thread
-    auto lambda = [&](bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/)
+    auto lambda = [&](bool (*f)(const T&))
     {
         //eval initiale
-        this->init(/*args ...*/);
+        this->init();
         do
         {
-            this->corps(/*args ...*/);
-            //std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        }while ((not f(*this->individus[0])) and this->running);
+            this->corps();
+        }while ((not f(*this->best)) and this->running);
         this->end();
     };
 
     //start thread
-    thread = std::thread(lambda,f/*,args ...*/);
+    thread = std::thread(lambda,f);
 };
 
 template <typename T>
-//template <typename ... Args>
-void GeneticThread<T>::init(/*Args& ... args*/)
+void GeneticThread<T>::init()
 {
     mutex.lock();
     if(initial_evaluation_req)
     {
-    for(int i=0;i<size;++i)
-        individus[i]->eval(/*args...*/);
+        for(int i=0;i<size;++i)
+        {
+            individus[i]->eval();
+            if(i == 0)
+                best = individus[i];
+            else if (individus[i] > best)
+                best = individus[i];
+        }
     }
     running = true;
     mutex.unlock();
 };
 
 template <typename T>
-//template <typename ... Args>
-void GeneticThread<T>::corps(/*Args& ... args*/)
+void GeneticThread<T>::corps()
 {
     mutex.lock();
     
     // creat children
     (this->*creatChildFunc)();
 
-    if(initial_evaluation_req)
-        for(int i=0;i<size_child;++i)
-        {
-            int c = size+i;
-            individus[c]->eval(/*args...*/);
-        }
     //reduce pop
     (this->*reducePopFunc)();
 
@@ -120,7 +113,7 @@ void GeneticThread<T>::corps(/*Args& ... args*/)
 
     std::cout<<"["<<thread.get_id()<<"] generation #"<<generation++<<std::endl;
     #if GENETIQUE_SAVE_RESULTS
-        save(std::to_string(individus[0]->get_score()));
+        save(std::to_string(best->get_score()));
     #endif
 };
 
@@ -144,14 +137,13 @@ template <typename T>
 void GeneticThread<T>::end()
 {
     mutex.lock();
+
     std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_child
-    //on renvoi le meilleur
-    T* res = individus[0];
+    best = individus[0];
+
     save("last");
-    //individus[0] = 0;
     mutex.unlock();
     running = false;
-    //return res;
     exit(0);
 };
 
@@ -172,39 +164,100 @@ void GeneticThread<T>::save(const std::string& name)
         file.open(filename);
         file<<"/*"
             <<"\n*\tdate: "<<format
-            <<"\n*\tscore: "<<individus[0]->get_score()
-            <<"\n*\tsize: "<<individus[0]->size()
+            <<"\n*\tscore: "<<best->get_score()
+            <<"\n*\tsize: "<<best->size()
             <<"\n*\tgeneration: "<<generation
             <<"\n*/"
-            <<"\n\tbest ="<<*individus[0]
+            <<"\n\tbest ="<<*best
             <<"\n";
         file.close();
-        std::cout<<"["<<thread.get_id()<<"] "<<format<<" best("<<individus[0]->get_score()<<"): "<<*individus[0]<<std::endl<<std::endl;
+        std::cout<<"["<<thread.get_id()<<"] "<<format<<" best("<<best->get_score()<<"): "<<*best<<std::endl<<std::endl;
     }
 };
 
 /******************** CUSTOM FONCTION **********************/
+template<class T>
+void GeneticThread<T>::setCreationMode(CreationMode val)
+{
+    switch(val)
+    {
+        case CreationMode::STUPIDE:
+            creatChildFunc = &GeneticThread<T>::stupideCreation;
+            initial_evaluation_req = true;
+        break;
+
+        case CreationMode::TOURNAMENT:
+            creatChildFunc = &GeneticThread<T>::tournamentCreation;
+        break;
+        
+    }
+};
+
+template<class T>
+void GeneticThread<T>::setReductionMode(ReductionMode val)
+{
+    switch(val)
+    {
+        case ReductionMode::STUPIDE:
+            reducePopFunc = &GeneticThread<T>::stupidReduction;
+            initial_evaluation_req = true;
+        break;
+
+        case ReductionMode::TOURNAMENT:
+            reducePopFunc = &GeneticThread<T>::tournamentReduction;
+        break;
+    }
+};
+
 //creation
 template<class T>
 void GeneticThread<T>::stupideCreation()
 {
     //en tri les size - size_child
-    std::partial_sort(individus,individus+(size-size_child),individus+size,gt_ptr<T>());
+    std::partial_sort(individus,individus+size_child,individus+size,gt_ptr<T>());
+    best = individus[0];
     //creation des enfants
     for(int i=0;i<size_child;++i)
     {
         int c = size+i;
         //on prend que les meilleurs, mais avec random
         individus[c] = makeNew(individus[i],*individus[random(0,size-1)]);
+        if(initial_evaluation_req)
+            individus[pop_cursor]->eval();
     }
-    initial_evaluation_req = true;
 };
 
 template<class T>
 void GeneticThread<T>::tournamentCreation()
 {
-    for(int i=0;i<size_child;++i)
+    while(pop_cursor < size + size_child)
     {
+        //random individus
+        T* id_rand[7];
+        for(int i=0;i<7,++i)
+        {
+            id_rand[i] = individus[random(0,size-1)];
+            if(id_rand[i]->need_eval())
+                id_rand[i]->eval();
+
+        }
+
+        T* tmp_best[2];
+
+        tmp_best[0] = (*id_rand[0]>*id_rand[1])?id_rand[0]:id_rand[1];
+        tmp_best[1] = (*id_rand[2]>*id_rand[3])?id_rand[2]:id_rand[3];
+        tmp_best[0] = (*tmp_best[0]>*tmp_best[1])?tmp_best[0]:tmp_best[1];
+
+        tmp_best[1] = (*id_rand[4]>*id_rand[5])?id_rand[4]:id_rand[5];
+        tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
+
+
+        individus[pop_cursor] = tmp_best[1]->crossOver(*tmp_best[0]);
+
+        if(initial_evaluation_req)
+            individus[pop_cursor]->eval();
+        
+        ++pop_cursor;
     }
 };
 
@@ -225,5 +278,9 @@ void GeneticThread<T>::stupidReduction()
 template <class T>
 void GeneticThread<T>::tournamentReduction()
 {
+    while(pop_cursor > size)
+    {
+        --pop_cursor;
+    }
 };
 

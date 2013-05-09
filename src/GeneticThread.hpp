@@ -37,23 +37,27 @@ class GeneticThread
         /*return the best (greater score)
         * you have to delete it yourself
         * run for nb_generation
-        * Args& ... args = argument to T.eval(Args& ... args)
         */
-        //template <typename ... Args>
-        void run(const int nb_generation/*,Args& ... args*/);
+        void run(const int nb_generation);
         
         /* return the best
         * you have to delete it youself
         * run until f return true
-        * Args& .. args = argumebt to T.eval( ... args) AND f(T& best,Args& ... args)
         */
         
-        //template <typename ... Args>
-        void run_while(bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/);
+        void run_while(bool (*f)(const T&));
 
         T* get_best()const {return individus[0];};
 
         inline void stop(){running=false;}
+
+        /****** FONCTIONEMENT MODE ************/
+
+        enum class CreationMode {STUPIDE=0,TOURNAMENT};
+        enum class ReductionMode {STUPIDE=0,TOURNAMENT};
+
+        void setCreationMode(CreationMode val);
+        void setReductionMode(ReductionMode val);
 
 
     private:
@@ -76,8 +80,7 @@ class GeneticThread
         /*************** FONCTIONS *******************/
         
         /* eval all the population */
-        //template <typename ... Args>
-        void init(/*Args& ... args*/);
+        void init();
 
         std::mutex mutex;
         std::thread thread;
@@ -87,8 +90,7 @@ class GeneticThread
         *  make children using T.crossOver(const T& other) + childre.mutate()
         *  remove worst and replace them with childrens
         */
-        //template <typename ... Args>
-        void corps(/*Args& ... args*/);
+        void corps();
 
         /* create a new T using parent1 & 2
          * It use crossover, and mutate internatly

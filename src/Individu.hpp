@@ -28,12 +28,16 @@ class Individu
 
         /* set the score */
         void eval();
+        
+        bool need_eval(){return not evaluate;};
 
         bool operator>(const Individu& other)const;
 
     private:
         float score;
         int _size;
+
+        bool evaluate;
 
         float x;
         float y;
