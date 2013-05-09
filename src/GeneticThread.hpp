@@ -39,8 +39,8 @@ class GeneticThread
         * run for nb_generation
         * Args& ... args = argument to T.eval(Args& ... args)
         */
-        template <typename ... Args>
-        void run(const int nb_generation,Args& ... args);
+        //template <typename ... Args>
+        void run(const int nb_generation/*,Args& ... args*/);
         
         /* return the best
         * you have to delete it youself
@@ -48,8 +48,8 @@ class GeneticThread
         * Args& .. args = argumebt to T.eval( ... args) AND f(T& best,Args& ... args)
         */
         
-        template <typename ... Args>
-        void run_while(bool (*f)(const T&,Args& ... args),Args& ... args);
+        //template <typename ... Args>
+        void run_while(bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/);
 
         T* get_best()const {return individus[0];};
 
@@ -76,8 +76,8 @@ class GeneticThread
         /*************** FONCTIONS *******************/
         
         /* eval all the population */
-        template <typename ... Args>
-        void init(Args& ... args);
+        //template <typename ... Args>
+        void init(/*Args& ... args*/);
 
         std::mutex mutex;
         std::thread thread;
@@ -87,8 +87,8 @@ class GeneticThread
         *  make children using T.crossOver(const T& other) + childre.mutate()
         *  remove worst and replace them with childrens
         */
-        template <typename ... Args>
-        void corps(Args& ... args);
+        //template <typename ... Args>
+        void corps(/*Args& ... args*/);
 
         /* create a new T using parent1 & 2
          * It use crossover, and mutate internatly

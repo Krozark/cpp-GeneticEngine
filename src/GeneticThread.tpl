@@ -43,38 +43,38 @@ GeneticThread<T>::~GeneticThread()
 };
 
 template <typename T>
-template <typename ... Args>
-void GeneticThread<T>::run(const int nb_generation,Args& ... args)
+//template <typename ... Args>
+void GeneticThread<T>::run(const int nb_generation/*,Args& ... args*/)
 {
     //will be execute in thread
-    auto lambda = [&](int nb_generation,Args&... args)
+    auto lambda = [&](int nb_generation/*,Args&... args*/)
     {
         //eval initiale
-        this->init(args ...);
+        this->init(/*args ...*/);
         //boucle de génération
         for(int generation=0;generation<nb_generation and this->running ;++generation)
-            this->corps(args ...);
+            this->corps(/*args ...*/);
         this->end();
     };
 
     //lambda(nb_generation,args...);
     //start thread
-    thread = std::thread(lambda,nb_generation,args...);
+    thread = std::thread(lambda,nb_generation/*,args...*/);
 };
 
 template <typename T>
-template <typename ... Args>
-void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),Args& ... args)
+//template <typename ... Args>
+void GeneticThread<T>::run_while(bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/)
 {
 
     //will be execute in thread
-    auto lambda = [&](bool (*f)(const T&,Args& ... args),Args& ... args)
+    auto lambda = [&](bool (*f)(const T&/*,Args& ... args*/)/*,Args& ... args*/)
     {
         //eval initiale
-        this->init(args ...);
+        this->init(/*args ...*/);
         do
         {
-            this->corps(args ...);
+            this->corps(/*args ...*/);
             //std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }while ((not f(*this->individus[0])) and this->running);
         this->end();
@@ -85,22 +85,22 @@ void GeneticThread<T>::run_while(bool (*f)(const T&,Args& ... args),Args& ... ar
 };
 
 template <typename T>
-template <typename ... Args>
-void GeneticThread<T>::init(Args& ... args)
+//template <typename ... Args>
+void GeneticThread<T>::init(/*Args& ... args*/)
 {
     mutex.lock();
     if(initial_evaluation_req)
     {
     for(int i=0;i<size;++i)
-        individus[i]->eval(args...);
+        individus[i]->eval(/*args...*/);
     }
     running = true;
     mutex.unlock();
 };
 
 template <typename T>
-template <typename ... Args>
-void GeneticThread<T>::corps(Args& ... args)
+//template <typename ... Args>
+void GeneticThread<T>::corps(/*Args& ... args*/)
 {
     mutex.lock();
     
@@ -111,7 +111,7 @@ void GeneticThread<T>::corps(Args& ... args)
         for(int i=0;i<size_child;++i)
         {
             int c = size+i;
-            individus[c]->eval(args...);
+            individus[c]->eval(/*args...*/);
         }
     //reduce pop
     (this->*reducePopFunc)();

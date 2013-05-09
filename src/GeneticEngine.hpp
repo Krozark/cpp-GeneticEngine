@@ -13,11 +13,11 @@ class GeneticEngine
 
         ~GeneticEngine();
 
-        template <typename ... Args>
-        T* run(const int nb_generation,Args& ... args);
+        //template <typename ... Args>
+        T* run(const int nb_generation/*,Args& ... args*/);
 
-        template <typename ... Args>
-        T* run_while(bool (*f)(const T&),Args& ... args);
+        //template <typename ... Args>
+        T* run_while(bool (*f)(const T&)/*,Args& ... args*/);
 
         void stop();
         

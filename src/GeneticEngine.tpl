@@ -36,21 +36,21 @@ GeneticEngine<T>::~GeneticEngine()
 };
 
 template <class T>
-template <typename ... Args>
-T* GeneticEngine<T>::run(const int nb_generation,Args& ... args)
+//template <typename ... Args>
+T* GeneticEngine<T>::run(const int nb_generation/*,Args& ... args*/)
 {
     for(int i=0;i<size;++i)
-        islands[i]->run(nb_generation,args ...);
+        islands[i]->run(nb_generation/*,args ...*/);
     wait();
     return end();
 };
 
 template <class T>
-template <typename ... Args>
-T* GeneticEngine<T>::run_while(bool (*f)(const T&),Args& ... args)
+//template <typename ... Args>
+T* GeneticEngine<T>::run_while(bool (*f)(const T&)/*,Args& ... args*/)
 {
     for(int i=0;i<size;++i)
-        islands[i]->run_while(f,args ...);
+        islands[i]->run_while(f/*,args ...*/);
     wait();
     return end();
 };
