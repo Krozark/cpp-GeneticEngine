@@ -81,7 +81,7 @@ void GeneticThread<T>::run_while(bool (*f)(const T&/*,Args& ... args*/)/*,Args& 
     };
 
     //start thread
-    thread = std::thread(lambda,f,args ...);
+    thread = std::thread(lambda,f/*,args ...*/);
 };
 
 template <typename T>
