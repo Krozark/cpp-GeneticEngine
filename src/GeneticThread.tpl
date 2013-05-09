@@ -139,7 +139,7 @@ void GeneticThread<T>::end()
 {
     mutex.lock();
 
-    std::partial_sort(individus,individus+1,individus+size,gt_ptr<T>());//en tri les size - size_child
+    std::partial_sort(individus,individus+1,individus+size-1,gt_ptr<T>());//en tri les size - size_child
     best = individus[0];
 
     save("last");
@@ -223,7 +223,8 @@ void GeneticThread<T>::stupideCreation()
         int c = size+i;
         //on prend que les meilleurs, mais avec random
         individus[c] = makeNew(individus[i],*individus[random(0,size-1)]);
-        if(initial_evaluation_req)
+
+        if(initial_evaluation_req and individus[pop_cursor]->need_eval())
             individus[pop_cursor]->eval();
     }
 };
@@ -231,6 +232,7 @@ void GeneticThread<T>::stupideCreation()
 template<class T>
 void GeneticThread<T>::tournamentCreation()
 {
+    pop_cursor = size;
     while(pop_cursor < size + size_child)
     {
         //random individus
@@ -238,7 +240,8 @@ void GeneticThread<T>::tournamentCreation()
         for(int i=0;i<7;++i)
         {
             id_rand[i] = individus[random(0,size-1)];
-            if(not initial_evaluation_req and id_rand[i]->need_eval())
+
+            if(id_rand[i]->need_eval())
                 id_rand[i]->eval();
 
         }
@@ -253,6 +256,7 @@ void GeneticThread<T>::tournamentCreation()
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
         //create child
         individus[pop_cursor] = tmp_best[1]->crossOver(*tmp_best[0]);
+
         if(initial_evaluation_req)
             individus[pop_cursor]->eval();
 
@@ -280,6 +284,7 @@ void GeneticThread<T>::stupidReduction()
 template <class T>
 void GeneticThread<T>::tournamentReduction()
 {
+    pop_cursor = size + size_child-1;
     while(pop_cursor > size)
     {
         //random individus
@@ -288,7 +293,8 @@ void GeneticThread<T>::tournamentReduction()
         {
             int c = random(0,pop_cursor);
             id_rand[i] = std::make_pair(c,individus[c]);
-            if(not initial_evaluation_req and individus[c]->need_eval())
+
+            if(individus[c]->need_eval())
                 individus[c]->eval();
         }
 

@@ -21,6 +21,12 @@ class GeneticEngine
 
         void stop();
         
+        enum class CreationMode {STUPIDE=0,TOURNAMENT};
+        enum class ReductionMode {STUPIDE=0,TOURNAMENT};
+
+        void setCreationMode(CreationMode val);
+        void setReductionMode(ReductionMode val);
+        
     private:
         GeneticThread<T>** islands;
         int size;
@@ -37,4 +43,5 @@ class GeneticEngine
 };
 
 #include "GeneticEngine.tpl"
+
 #endif

@@ -20,18 +20,21 @@ void Individu::mutate()
 
 Individu* Individu::crossOver(const Individu& other) const
 {
-    Individu* res = new Individu();
-    res->x = x;
+    Individu* res = this->clone();
     res->y = other.y;
+    res->evaluate = false;
 
     return res;
 };
 
-Individu* Individu::clone()
+Individu* Individu::clone()const
 {
     Individu* res = new Individu();
     res->x = x;
     res->y = y;
+    res->score = score;
+    res->_size = _size;
+    res->evaluate = true;
 
     return res;
 };

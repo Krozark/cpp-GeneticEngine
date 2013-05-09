@@ -140,9 +140,45 @@ T* GeneticEngine<T>::end()
     for(int i=1;i<size;++i)
     {
         T* __best = islands[i]->get_best();
-        if(__best > best)
+        if(*__best > *best)
             std::swap(best,__best);
         delete __best;
     }
     return best;
 };
+
+
+template<class T>
+void GeneticEngine<T>::setCreationMode(CreationMode val)
+{
+    for(int i=0;i<size;++i)
+    {
+        switch(val)
+        {
+            case CreationMode::STUPIDE:
+                islands[i]->setCreationMode(GeneticThread<T>::CreationMode::STUPIDE);
+            break;
+            case CreationMode::TOURNAMENT:
+                islands[i]->setCreationMode(GeneticThread<T>::CreationMode::TOURNAMENT);
+            break;
+        }
+    }
+};
+
+template<class T>
+void GeneticEngine<T>::setReductionMode(ReductionMode val)
+{
+    for(int i=0;i<size;++i)
+    {
+        switch(val)
+        {
+            case ReductionMode::STUPIDE:
+                islands[i]->setReductionMode(GeneticThread<T>::ReductionMode::STUPIDE);
+            break;
+            case ReductionMode::TOURNAMENT:
+                islands[i]->setReductionMode(GeneticThread<T>::ReductionMode::TOURNAMENT);
+            break;
+            }
+    }
+};
+

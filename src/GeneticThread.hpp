@@ -53,11 +53,6 @@ class GeneticThread
 
         /****** FONCTIONEMENT MODE ************/
 
-        enum class CreationMode {STUPIDE=0,TOURNAMENT};
-        enum class ReductionMode {STUPIDE=0,TOURNAMENT};
-
-        void setCreationMode(CreationMode val);
-        void setReductionMode(ReductionMode val);
 
 
     private:
@@ -69,14 +64,20 @@ class GeneticThread
         const float mutation_taux;
         int generation;
         const std::string prefix;
+        bool initial_evaluation_req;
+        T* best;
         /* Fonction to call to create children */
         void (GeneticThread<T>::*creatChildFunc)();
         /* Fonction to call to  reduce pop */
         void (GeneticThread<T>::*reducePopFunc)();
 
-        bool initial_evaluation_req;
 
-        T* best;
+        enum class CreationMode {STUPIDE=0,TOURNAMENT};
+        enum class ReductionMode {STUPIDE=0,TOURNAMENT};
+
+        void setCreationMode(CreationMode val);
+        void setReductionMode(ReductionMode val);
+
 
 
         /*************** FONCTIONS *******************/

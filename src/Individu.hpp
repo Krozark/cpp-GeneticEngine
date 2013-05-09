@@ -15,7 +15,7 @@ class Individu
         /* create a new Individu with 2 others */
         Individu * crossOver(const Individu& other)const;
 
-        Individu* clone();
+        Individu* clone()const ;
         /* siple getters */
         inline const float get_score()const {return score;};
         inline const int size()const {return _size;};
