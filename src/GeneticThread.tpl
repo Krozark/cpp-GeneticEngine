@@ -2,6 +2,7 @@ extern std::default_random_engine generator;
 
 
 #include <iostream>
+#include <utility>
 
 /* return *x>*y */
 template <typename T>
@@ -20,7 +21,7 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
     {
         individus[i] = new T(std::forward<Args>(args) ...);
     }
-    pop_child = pop_size;
+    pop_cursor = pop_size;
 
     /***** init fonction to use *********/
     setCreationMode(CreationMode::STUPIDE);
@@ -250,13 +251,14 @@ void GeneticThread<T>::tournamentCreation()
 
         tmp_best[1] = (*id_rand[4]>*id_rand[5])?id_rand[4]:id_rand[5];
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
-
-
+        //create child
         individus[pop_cursor] = tmp_best[1]->crossOver(*tmp_best[0]);
-
         if(initial_evaluation_req)
             individus[pop_cursor]->eval();
-        
+
+        //maj on best
+        best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
+        //nex
         ++pop_cursor;
     }
 };
@@ -280,6 +282,33 @@ void GeneticThread<T>::tournamentReduction()
 {
     while(pop_cursor > size)
     {
+        //random individus
+        std::pair<int,T*> id_rand[7]; //i,Individu*
+        for(int i=0;i<7;++i)
+        {
+            int c = random(0,pop_cursor);
+            id_rand[i] = std::make_pair(c,individus[c]);
+            if(not initial_evaluation_req and individus[c]->need_eval())
+                individus[c]->eval();
+        }
+
+        std::pair<int,T*> worst[2];
+        
+        //calc the worst
+        worst[0] = (*id_rand[0].second>*id_rand[1].second)?id_rand[1]:id_rand[0];
+        worst[1] = (*id_rand[2].second>*id_rand[3].second)?id_rand[3]:id_rand[2];
+        worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[2];
+
+        worst[1] = (*id_rand[4].second>*id_rand[5].second)?id_rand[5]:id_rand[4];
+        worst[1] = (*id_rand[6].second>*worst[1].second)?worst[1]:id_rand[6];
+
+        worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
+
+        //delete worst
+        delete worst[0].second;
+        //move last at new free place
+        individus[worst[0].first] = individus[pop_cursor];
+        //next
         --pop_cursor;
     }
 };
