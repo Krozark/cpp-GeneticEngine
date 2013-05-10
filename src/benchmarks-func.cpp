@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-template<typename T>
-inline constexpr T abs(const T& x) {return (x<T(0.0))?-x:x;};
+
 
 float Q_rsqrt( float number )
 {
@@ -16,8 +15,8 @@ float Q_rsqrt( float number )
         i  = * ( long * ) &y;                       // evil floating point bit level hacking
         i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
         y  = * ( float * ) &i;
-        y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
-        y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+        y  = y * ( threehalfs - ( x2 * power<2>::of(y)) );   // 1st iteration
+        y  = y * ( threehalfs - ( x2 * power<2>::of(y)) );   // 2nd iteration, this can be removed
  
         return y;
 }
@@ -45,3 +44,11 @@ double schwefel(const std::vector<double>& dim)
     }
     res /= nb_dim;
 };
+
+double six_hump(const std::vector<double>& dim)
+{
+    assert(dim.size() == 2);
+
+    return (4-2.1*power<2>::of(dim[0])+power<4>::of(dim[0])/3)*power<2>::of(dim[0])+ dim[0]*dim[1]+(-4 + 4*power<2>::of(dim[1]))*power<2>::of(dim[1]);
+}
+   
