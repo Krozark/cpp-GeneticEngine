@@ -9,7 +9,7 @@ template<int DIM>
 class Individu
 {
     public:
-        Individu();
+        Individu(bool init=true);
         ~Individu();
         /* change current individu */
         void mutate();
@@ -24,7 +24,7 @@ class Individu
         friend std::ostream& operator<<(std::ostream& output,const Individu& self)
         {
             for(int i=0;i<DIM;++i)
-                output<<i<<": <"<<coef[i]<<"> ";
+                output<<i<<": <"<<self.coef[i]<<"> ";
             return output;
         };
 

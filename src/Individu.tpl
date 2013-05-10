@@ -1,15 +1,15 @@
 
 template<int DIM>
-Individu<DIM>::Individu() : score(0), _size(0)
+Individu<DIM>::Individu(bool init) : score(0), _size(0)
 {
 
-    for(int i=0;i<DIM;++i)
+    for(int i=0;init and i<DIM;++i)
         coef[i] = random(bornes[i][MIN],bornes[i][MAX]);
     evaluate = false;
 };
 
 template<int DIM>
-Individu::~Individu()
+Individu<DIM>::~Individu()
 {
 };
 
@@ -30,7 +30,7 @@ Individu<DIM>* Individu<DIM>::crossOver(const Individu& other) const
 {
     Individu<DIM>* res = this->clone();
 
-    float gama, alpha = 0.5;
+    float gamma, alpha = 0.5;
     for(int i=0;i<DIM;++i)
     {
         gamma = (1 + 2* alpha) * random(0.f,1.f) - alpha;
@@ -48,9 +48,9 @@ Individu<DIM>* Individu<DIM>::crossOver(const Individu& other) const
 template<int DIM>
 Individu<DIM>* Individu<DIM>::clone()const
 {
-    Individu<DIM>* res = new Individu();
-    res->x = x;
-    res->y = y;
+    Individu<DIM>* res = new Individu(false);
+    for(int i=0;i<DIM;++i)
+        res->coef[i] = coef[i];
     res->score = score;
     res->_size = _size;
     res->evaluate = true;
@@ -61,7 +61,7 @@ Individu<DIM>* Individu<DIM>::clone()const
 template<int DIM>
 void Individu<DIM>::eval()
 {
-    score = (x-y)/1000.0;
+    //score = (x-y)/1000.0;
     evaluate = true;
 };
 
