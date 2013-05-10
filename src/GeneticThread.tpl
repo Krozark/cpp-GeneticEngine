@@ -116,8 +116,6 @@ void GeneticThread<T>::corps()
     #if GENETIQUE_SAVE_RESULTS
         save(std::to_string(best->get_score()));
     #endif
-    for(int i=0;i<size;++i)
-        std::cout<<"("<<individus[i]->get_score()<<") "<<*individus[i]<<std::endl;
 };
 
 
@@ -235,7 +233,6 @@ void GeneticThread<T>::stupideCreation()
 template<class T>
 void GeneticThread<T>::tournamentCreation()
 {
-    std::cout<<" tournamentCreation"<<std::endl;
     for (int i=0;i<size_child;++i)
     {
         int c = size+i;
@@ -247,7 +244,6 @@ void GeneticThread<T>::tournamentCreation()
 
             //if(id_rand[i]->need_eval())
                 id_rand[i]->eval();
-        std::cout<<"("<<individus[i]->get_score()<<") "<<*individus[i]<<std::endl;
 
         }
 
@@ -260,15 +256,10 @@ void GeneticThread<T>::tournamentCreation()
         tmp_best[1] = (*id_rand[4]>*id_rand[5])?id_rand[4]:id_rand[5];
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
         //create child
-        //
         individus[c] = makeNew(tmp_best[1],*tmp_best[0]);
-
-
         //maj on best
-        //best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
-        //nex
-        std::cout<<*best<<std::endl;
-        std::cout<<c<<std::endl;
+        best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
+
     }
 };
 
@@ -277,13 +268,14 @@ void GeneticThread<T>::tournamentCreation()
 template<class T>
 void GeneticThread<T>::stupidReduction()
 {
+    std::partial_sort(individus,individus+size,individus+size+size_child,gt_ptr<T>());
     for(int i=0;i<size_child;++i)
     {
         int c = size+i;
-        std::swap(individus[size-size_child+i],individus[c]);
         delete individus[c];
         individus[c] = 0;
     }
+    best = individus[0];
 };
 
 template <class T>
@@ -291,13 +283,13 @@ void GeneticThread<T>::tournamentReduction()
 {
     for(int i=0;i<size_child;++i)
     {
-        int c = size+i;
+        int c = size+size_child-1-i;
         //random individus
         std::pair<int,T*> id_rand[7]; //i,Individu*
-        for(int i=0;i<7;++i)
+        for(int j=0;j<7;++j)
         {
             int r = random(0,c);
-            id_rand[i] = std::make_pair(c,individus[r]);
+            id_rand[j] = std::make_pair(r,individus[r]);
 
             if(individus[r]->need_eval())
                 individus[r]->eval();
@@ -315,10 +307,15 @@ void GeneticThread<T>::tournamentReduction()
 
         worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
 
+        if(best == worst[0].second)
+            best = worst[1].second;
+
         //delete worst
         delete worst[0].second;
+
         //move last at new free place
         individus[worst[0].first] = individus[c];
+        individus[c] = 0;
     }
 };
 
