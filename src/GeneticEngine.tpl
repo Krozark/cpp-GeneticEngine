@@ -182,3 +182,11 @@ void GeneticEngine<T>::setReductionMode(ReductionMode val)
     }
 };
 
+
+template<class T>
+void GeneticEngine<T>::setEvaluateAll(bool v)
+{
+    for(int i=0;i<size;++i)
+        islands[i].initial_evaluation_req = v;
+};
+

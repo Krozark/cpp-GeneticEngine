@@ -26,6 +26,8 @@ class GeneticEngine
 
         void setCreationMode(CreationMode val);
         void setReductionMode(ReductionMode val);
+
+        void setEvaluateAll(bool v);
         
     private:
         GeneticThread<T>** islands;

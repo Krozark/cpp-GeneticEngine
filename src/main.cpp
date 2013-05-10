@@ -15,13 +15,14 @@ int main(int argc,char * argv[])
 
     int nb_threads = 1;
 
-    GeneticEngine<Individu> engine(nb_threads,mutation_taux,"filename",pop_size,pop_child/*args to Individu constructor*/);
+    GeneticEngine<Individu> engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
     bool (*stop)(const Individu&) = [](const Individu& best)
     {
         return false;
     };
     engine.setCreationMode(GeneticEngine<Individu>::CreationMode::TOURNAMENT);
     engine.setReductionMode(GeneticEngine<Individu>::ReductionMode::TOURNAMENT);
+    engine.setEvaluateAll(true);
     //Individu* best = engine.run_while(stop,pop_child);
     Individu* best = engine.run(200);
     delete best;
