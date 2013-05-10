@@ -42,7 +42,8 @@ double schwefel(const std::vector<double>& dim)
         const double& xi = dim[i];
         res +=(-xi)*sin(sqrt(abs(xi)));
     }
-    res /= nb_dim;
+
+    return res;
 };
 
 double six_hump(const std::vector<double>& dim)
