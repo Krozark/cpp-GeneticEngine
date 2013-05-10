@@ -60,7 +60,6 @@ class GeneticThread
         T** individus;
         const int size;
         const int size_child;
-        int pop_cursor;
         const float mutation_taux;
         int generation;
         const std::string prefix;

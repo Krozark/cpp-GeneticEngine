@@ -21,7 +21,6 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
     {
         individus[i] = new T(std::forward<Args>(args) ...);
     }
-    pop_cursor = pop_size;
 
     /***** init fonction to use *********/
     setCreationMode(CreationMode::STUPIDE);
@@ -84,17 +83,18 @@ template <typename T>
 void GeneticThread<T>::init()
 {
     mutex.lock();
+    best = individus[0];
     if(initial_evaluation_req)
     {
         for(int i=0;i<size;++i)
         {
             individus[i]->eval();
-            if(i == 0)
-                best = individus[i];
-            else if (individus[i] > best)
+            if(i > 0 and *individus[i] > *best)
                 best = individus[i];
         }
     }
+    else
+        individus[0]->eval();
     running = true;
     mutex.unlock();
 };
@@ -116,6 +116,8 @@ void GeneticThread<T>::corps()
     #if GENETIQUE_SAVE_RESULTS
         save(std::to_string(best->get_score()));
     #endif
+    for(int i=0;i<size;++i)
+        std::cout<<"("<<individus[i]->get_score()<<") "<<*individus[i]<<std::endl;
 };
 
 
@@ -131,6 +133,9 @@ T* GeneticThread<T>::makeNew(const T* parent1,const T& parent2)
             res->mutate();
     }
 
+    if(initial_evaluation_req and res->need_eval())
+        res->eval();
+
     return res;
 };
 
@@ -138,9 +143,9 @@ template <typename T>
 void GeneticThread<T>::end()
 {
     mutex.lock();
-
-    std::partial_sort(individus,individus+1,individus+size-1,gt_ptr<T>());//en tri les size - size_child
-    best = individus[0];
+    
+    for(int i=0;i<size;++i)
+        best = (*individus[i]>*best)?individus[i]:best;
 
     save("last");
     mutex.unlock();
@@ -224,25 +229,25 @@ void GeneticThread<T>::stupideCreation()
         //on prend que les meilleurs, mais avec random
         individus[c] = makeNew(individus[i],*individus[random(0,size-1)]);
 
-        if(initial_evaluation_req and individus[pop_cursor]->need_eval())
-            individus[pop_cursor]->eval();
     }
 };
 
 template<class T>
 void GeneticThread<T>::tournamentCreation()
 {
-    pop_cursor = size;
-    while(pop_cursor < size + size_child)
+    std::cout<<" tournamentCreation"<<std::endl;
+    for (int i=0;i<size_child;++i)
     {
+        int c = size+i;
         //random individus
         T* id_rand[7];
         for(int i=0;i<7;++i)
         {
             id_rand[i] = individus[random(0,size-1)];
 
-            if(id_rand[i]->need_eval())
+            //if(id_rand[i]->need_eval())
                 id_rand[i]->eval();
+        std::cout<<"("<<individus[i]->get_score()<<") "<<*individus[i]<<std::endl;
 
         }
 
@@ -255,15 +260,15 @@ void GeneticThread<T>::tournamentCreation()
         tmp_best[1] = (*id_rand[4]>*id_rand[5])?id_rand[4]:id_rand[5];
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
         //create child
-        individus[pop_cursor] = tmp_best[1]->crossOver(*tmp_best[0]);
+        //
+        individus[c] = makeNew(tmp_best[1],*tmp_best[0]);
 
-        if(initial_evaluation_req)
-            individus[pop_cursor]->eval();
 
         //maj on best
-        best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
+        //best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
         //nex
-        ++pop_cursor;
+        std::cout<<*best<<std::endl;
+        std::cout<<c<<std::endl;
     }
 };
 
@@ -284,18 +289,18 @@ void GeneticThread<T>::stupidReduction()
 template <class T>
 void GeneticThread<T>::tournamentReduction()
 {
-    pop_cursor = size + size_child-1;
-    while(pop_cursor > size)
+    for(int i=0;i<size_child;++i)
     {
+        int c = size+i;
         //random individus
         std::pair<int,T*> id_rand[7]; //i,Individu*
         for(int i=0;i<7;++i)
         {
-            int c = random(0,pop_cursor);
-            id_rand[i] = std::make_pair(c,individus[c]);
+            int r = random(0,c);
+            id_rand[i] = std::make_pair(c,individus[r]);
 
-            if(individus[c]->need_eval())
-                individus[c]->eval();
+            if(individus[r]->need_eval())
+                individus[r]->eval();
         }
 
         std::pair<int,T*> worst[2];
@@ -313,9 +318,7 @@ void GeneticThread<T>::tournamentReduction()
         //delete worst
         delete worst[0].second;
         //move last at new free place
-        individus[worst[0].first] = individus[pop_cursor];
-        //next
-        --pop_cursor;
+        individus[worst[0].first] = individus[c];
     }
 };
 
