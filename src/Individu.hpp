@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+template<int DIM>
 class Individu
 {
     public:
@@ -22,7 +23,8 @@ class Individu
         /* display the individu to save it in file */
         friend std::ostream& operator<<(std::ostream& output,const Individu& self)
         {
-            output<<"X: "<<self.x<<" Y: "<<self.y;
+            for(int i=0;i<DIM;++i)
+                output<<i<<": <"<<coef[i]<<"> ";
             return output;
         };
 
@@ -33,14 +35,19 @@ class Individu
 
         bool operator>(const Individu& other)const;
 
+        
+        enum _BORNE{MIN=0,MAX};
+        static float bornes[DIM][2]; // [dim] {min,max}
+
     private:
         float score;
         int _size;
-
         bool evaluate;
 
-        float x;
-        float y;
+        float coef[DIM];
 };
+
+
+#include "Individu.tpl"
 
 #endif
