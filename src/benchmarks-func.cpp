@@ -1,7 +1,7 @@
 #include "benchmarks-func.hpp"
 
 #include <cmath>
-
+#include <assert.h>
 
 
 float Q_rsqrt( float number )

@@ -10,9 +10,6 @@ int main(int argc,char * argv[])
 {
     rand_init();
 
-    cout<<power<2>::of(2.2)<<endl;
-
-    /*
     int pop_size = 10000;
     float mutation_taux = 0.05;
     int pop_child = pop_size*0.75;
@@ -31,6 +28,6 @@ int main(int argc,char * argv[])
     //Individu* best = engine.run_while(stop,pop_child);
     Individu* best = engine.run(200);
     delete best;
-    */
+
     return 0;
 };
