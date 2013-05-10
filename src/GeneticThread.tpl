@@ -242,7 +242,7 @@ void GeneticThread<T>::tournamentCreation()
         {
             id_rand[i] = individus[random(0,size-1)];
 
-            //if(id_rand[i]->need_eval())
+            if(id_rand[i]->need_eval())
                 id_rand[i]->eval();
 
         }
@@ -257,6 +257,7 @@ void GeneticThread<T>::tournamentCreation()
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
         //create child
         individus[c] = makeNew(tmp_best[1],*tmp_best[0]);
+
         //maj on best
         best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
 
