@@ -116,9 +116,9 @@ random.hpp
 
 Juste to use random generator
 
-float random(float min,float max)
-int random(int min, int max)
-int random(int max)
+* float random(float min,float max)
+* int random(int min, int max)
+* int random(int max)
 
 Exemple
 =======
