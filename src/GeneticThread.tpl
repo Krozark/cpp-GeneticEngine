@@ -13,7 +13,7 @@ struct gt_ptr : std::binary_function<T,T,bool>
 
 template <typename T>
 template <typename ... Args>
-GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix(filename), running(false)
+GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix("best/"+filename), running(false)
 {
     mutex.lock();
     individus = new T*[pop_size+pop_child];
@@ -154,7 +154,7 @@ void GeneticThread<T>::end()
 template <typename T>
 void GeneticThread<T>::save(const std::string& name)
 {
-    std::string filename("best/"+prefix+"_"+name+".res");
+    std::string filename(prefix+"_"+name+".res");
     if(not std::ifstream(filename))
     {
         time_t temps;
@@ -225,7 +225,7 @@ void GeneticThread<T>::stupideCreation()
     {
         int c = size+i;
         //on prend que les meilleurs, mais avec random
-        individus[c] = makeNew(individus[i],*individus[random(0,size-1)]);
+        individus[c] = makeNew(individus[i%size],*individus[random(0,size-1)]);
 
     }
 };

@@ -9,9 +9,9 @@ int main(int argc,char * argv[])
 {
     rand_init();
 
-    int pop_size = 100;
+    int pop_size = 10000;
     float mutation_taux = 0.05;
-    int pop_child = pop_size*0.25;
+    int pop_child = pop_size*0.75;
 
     int nb_threads = 1;
 
@@ -23,7 +23,7 @@ int main(int argc,char * argv[])
     engine.setCreationMode(GeneticEngine<Individu>::CreationMode::TOURNAMENT);
     engine.setReductionMode(GeneticEngine<Individu>::ReductionMode::TOURNAMENT);
     //Individu* best = engine.run_while(stop,pop_child);
-    Individu* best = engine.run(10);
+    Individu* best = engine.run(200);
     delete best;
     return 0;
 };
