@@ -27,7 +27,7 @@ int main(int argc,char * argv[])
     float mutation_taux = 0.01;
     int pop_child = 100;
 
-    int nb_threads = 1;
+    int nb_threads = 4;
 
     /*
     Individu<2>::benchmarks = six_hump;
@@ -38,7 +38,6 @@ int main(int argc,char * argv[])
     Individu<2>::bornes[1][Individu<2>::MAX] = 2;
 
     GeneticEngine<Individu<2> > engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
-    engine.setEvaluateAll(false);
     engine.setTimeout(5000);
     bool (*stop)(const Individu<2>&) = [](const Individu<2>& best)
     {
@@ -59,8 +58,8 @@ int main(int argc,char * argv[])
     Individu<1>::bornes[0][Individu<1>::MAX] = 500;
 
     GeneticEngine<Individu<1> > engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
-    engine.setEvaluateAll(false);
     engine.setTimeout(5000);
+    engine.setEvaluateAll(false);
     bool (*stop)(const Individu<1>&) = [](const Individu<1>& best)
     {
         //auto coef = best.getCoef();
@@ -68,8 +67,8 @@ int main(int argc,char * argv[])
         return false;
     };
 
-    //engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::TOURNAMENT);
-    engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::TOURNAMENT);
+    //engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::STUPIDE);
+    //engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
 
 
     Individu<1>* best = engine.run_while(stop);

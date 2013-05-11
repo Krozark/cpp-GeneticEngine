@@ -23,10 +23,11 @@ GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size
     }
 
     /***** init fonction to use *********/
-    setCreationMode(CreationMode::STUPIDE);
-    setReductionMode(ReductionMode::STUPIDE);
-
+    initial_evaluation_req = false;
     mutex.unlock();
+
+    setCreationMode(CreationMode::TOURNAMENT);
+    setReductionMode(ReductionMode::TOURNAMENT);
 };
 
 template <typename T>
@@ -185,6 +186,7 @@ void GeneticThread<T>::save(const std::string& name)
 template<class T>
 void GeneticThread<T>::setCreationMode(CreationMode val)
 {
+    mutex.lock();
     switch(val)
     {
         case CreationMode::STUPIDE:
@@ -197,11 +199,13 @@ void GeneticThread<T>::setCreationMode(CreationMode val)
         break;
         
     }
+    mutex.unlock();
 };
 
 template<class T>
 void GeneticThread<T>::setReductionMode(ReductionMode val)
 {
+    mutex.lock();
     switch(val)
     {
         case ReductionMode::STUPIDE:
@@ -213,6 +217,7 @@ void GeneticThread<T>::setReductionMode(ReductionMode val)
             reducePopFunc = &GeneticThread<T>::tournamentReduction;
         break;
     }
+    mutex.unlock();
 };
 
 //creation
@@ -289,7 +294,12 @@ void GeneticThread<T>::tournamentReduction()
         std::pair<int,T*> id_rand[7]; //i,Individu*
         for(int j=0;j<7;++j)
         {
-            int r = random(0,i);
+
+
+            int r;
+            do{
+               r = random(0,i);
+            }while (individus[r] == best);
             id_rand[j] = std::make_pair(r,individus[r]);
 
             if(individus[r]->need_eval())
@@ -315,13 +325,13 @@ void GeneticThread<T>::tournamentReduction()
         individus[worst[3].first] = individus[i];
         individus[i] = 0;
 
-        if(best == worst[3].second)
+        /*if(best == worst[3].second)
         {
             if(worst[3].second == worst[1].second)
                 best = worst[0].second;
             else // worst[3] = worst[0]
                 best = worst[1].second;
-        }
+        }*/
     }
 };
 

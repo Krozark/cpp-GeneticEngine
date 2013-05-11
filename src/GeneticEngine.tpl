@@ -188,6 +188,10 @@ template<class T>
 void GeneticEngine<T>::setEvaluateAll(bool v)
 {
     for(int i=0;i<size;++i)
+    {
+        islands[i]->mutex.lock();
         islands[i]->initial_evaluation_req = v;
+        islands[i]->mutex.unlock();
+    }
 };
 
