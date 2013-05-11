@@ -4,6 +4,7 @@
 #include "random.hpp"
 
 #include <iostream>
+#include <vector>
 
 template<int DIM>
 class Individu
@@ -38,14 +39,25 @@ class Individu
         
         enum _BORNE{MIN=0,MAX};
         static float bornes[DIM][2]; // [dim] {min,max}
+        static double (*benchmarks)(const std::vector<double>&);
+
+        inline const std::vector<double>& getCoef()const{return coef;};
+        
 
     private:
         float score;
         int _size;
         bool evaluate;
+        
 
-        float coef[DIM];
+        std::vector<double> coef;
 };
+
+template<int DIM>
+float Individu<DIM>::bornes[DIM][2];
+
+template<int DIM>
+double (*Individu<DIM>::benchmarks)(const std::vector<double>&);
 
 
 #include "Individu.tpl"

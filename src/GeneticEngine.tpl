@@ -20,6 +20,7 @@ GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filena
     for(int i=0;i<size;++i)
         islands[i] = new GeneticThread<T>(taux_mut,filename,pop_size/size,pop_child/size,std::forward<Args>(args)...);
 
+    setTimeout(1000);
 
 };
 
@@ -92,7 +93,7 @@ void GeneticEngine<T>::stop()
 template<class T>
 void GeneticEngine<T>::send()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
     while(running)
     {
         if (size > 1)
@@ -118,7 +119,7 @@ void GeneticEngine<T>::send()
             send(best,*dest);
         }
         //wait a moment for the other send
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
     }
     exit(0);
 };

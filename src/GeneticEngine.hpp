@@ -28,11 +28,15 @@ class GeneticEngine
         void setReductionMode(ReductionMode val);
 
         void setEvaluateAll(bool v);
+
+        void setTimeout(unsigned int t){timeout = t;};
         
     private:
         GeneticThread<T>** islands;
         int size;
         volatile bool running;
+
+        unsigned int timeout;
 
         void send();
         void send(T* id,GeneticThread<T>& dest);
