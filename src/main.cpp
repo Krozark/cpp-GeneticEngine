@@ -68,7 +68,7 @@ int main(int argc,char * argv[])
         return false;
     };
 
-    //engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::TOURNAMENT);
+    engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::TOURNAMENT);
     //engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::TOURNAMENT);
     engine.setEvaluateAll(true);
 
