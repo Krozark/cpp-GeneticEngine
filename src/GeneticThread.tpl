@@ -83,18 +83,20 @@ template <typename T>
 void GeneticThread<T>::init()
 {
     mutex.lock();
+
     best = individus[0];
+    individus[0]->eval();
+
     if(initial_evaluation_req)
     {
-        for(int i=0;i<size;++i)
+        for(int i=1;i<size;++i)
         {
             individus[i]->eval();
-            if(i > 0 and *individus[i] > *best)
+            if(*individus[i] > *best)
                 best = individus[i];
         }
     }
-    else
-        individus[0]->eval();
+
     running = true;
     mutex.unlock();
 };
@@ -258,7 +260,6 @@ void GeneticThread<T>::tournamentCreation()
         //create child
         individus[c] = makeNew(tmp_best[1],*tmp_best[0]);
 
-        //maj on best
         best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
 
     }
@@ -282,21 +283,20 @@ void GeneticThread<T>::stupidReduction()
 template <class T>
 void GeneticThread<T>::tournamentReduction()
 {
-    for(int i=0;i<size_child;++i)
+    for(int i=size+size_child-1;i<=size;--i)
     {
-        int c = size+size_child-1-i;
         //random individus
         std::pair<int,T*> id_rand[7]; //i,Individu*
         for(int j=0;j<7;++j)
         {
-            int r = random(0,c);
+            int r = random(0,i);
             id_rand[j] = std::make_pair(r,individus[r]);
 
             if(individus[r]->need_eval())
                 individus[r]->eval();
         }
 
-        std::pair<int,T*> worst[2];
+        std::pair<int,T*> worst[3];
         
         //calc the worst
         worst[0] = (*id_rand[0].second>*id_rand[1].second)?id_rand[1]:id_rand[0];
@@ -306,17 +306,22 @@ void GeneticThread<T>::tournamentReduction()
         worst[1] = (*id_rand[4].second>*id_rand[5].second)?id_rand[5]:id_rand[4];
         worst[1] = (*id_rand[6].second>*worst[1].second)?worst[1]:id_rand[6];
 
-        worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
-
-        if(best == worst[0].second)
-            best = worst[1].second;
+        worst[3] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
 
         //delete worst
-        delete worst[0].second;
+        delete worst[3].second;
 
         //move last at new free place
-        individus[worst[0].first] = individus[c];
-        individus[c] = 0;
+        individus[worst[3].first] = individus[i];
+        individus[i] = 0;
+
+        if(best == worst[3].second)
+        {
+            if(worst[3].second == worst[1].second)
+                best = worst[0].second;
+            else // worst[3] = worst[0]
+                best = worst[1].second;
+        }
     }
 };
 
