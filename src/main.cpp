@@ -25,9 +25,9 @@ int main(int argc,char * argv[])
 
     int pop_size = 1000;
     float mutation_taux = 0.01;
-    int pop_child = 1;
+    int pop_child = 1000;
 
-    int nb_threads = 1;
+    int nb_threads = 50;
 
     /*
     Individu<2>::benchmarks = six_hump;
