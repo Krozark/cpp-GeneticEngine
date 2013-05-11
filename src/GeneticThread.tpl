@@ -16,8 +16,8 @@ template <typename ... Args>
 GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix("best/"+filename), running(false)
 {
     mutex.lock();
-    individus = new T*[pop_size+pop_child];
-    for(int i=0;i<pop_size;++i)
+    individus = new T*[size+size_child];
+    for(int i=0;i<size;++i)
     {
         individus[i] = new T(std::forward<Args>(args) ...);
     }
@@ -240,18 +240,16 @@ void GeneticThread<T>::stupideCreation()
 template<class T>
 void GeneticThread<T>::tournamentCreation()
 {
-    for (int i=0;i<size_child;++i)
+    for (int i=size;i<int(size+size_child);++i)
     {
-        int c = size+i;
         //random individus
         T* id_rand[7];
-        for(int i=0;i<7;++i)
+        for(int j=0;j<7;++j)
         {
-            id_rand[i] = individus[random(0,size-1)];
+            id_rand[j] = individus[random(0,size-1)];
 
-            if(id_rand[i]->need_eval())
-                id_rand[i]->eval();
-
+            if(id_rand[j]->need_eval())
+                id_rand[j]->eval();
         }
 
         T* tmp_best[2];
@@ -263,7 +261,7 @@ void GeneticThread<T>::tournamentCreation()
         tmp_best[1] = (*id_rand[4]>*id_rand[5])?id_rand[4]:id_rand[5];
         tmp_best[1] = (*id_rand[6]>*tmp_best[1])?id_rand[6]:tmp_best[1];
         //create child
-        individus[c] = makeNew(tmp_best[1],*tmp_best[0]);
+        individus[i] = makeNew(tmp_best[1],*tmp_best[0]);
 
         best = (*tmp_best[0]>*best)?tmp_best[0]:(*tmp_best[1]>*best)?tmp_best[1]:best;
 
@@ -288,14 +286,12 @@ void GeneticThread<T>::stupidReduction()
 template <class T>
 void GeneticThread<T>::tournamentReduction()
 {
-    for(int i=size+size_child-1;i<=size;--i)
+    for(int i=size+size_child-1;i>=size;--i)
     {
         //random individus
         std::pair<int,T*> id_rand[7]; //i,Individu*
         for(int j=0;j<7;++j)
         {
-
-
             int r;
             do{
                r = random(0,i);
@@ -311,11 +307,11 @@ void GeneticThread<T>::tournamentReduction()
         //calc the worst
         worst[0] = (*id_rand[0].second>*id_rand[1].second)?id_rand[1]:id_rand[0];
         worst[1] = (*id_rand[2].second>*id_rand[3].second)?id_rand[3]:id_rand[2];
-        worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[2];
+        worst[0] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
 
         worst[1] = (*id_rand[4].second>*id_rand[5].second)?id_rand[5]:id_rand[4];
         worst[1] = (*id_rand[6].second>*worst[1].second)?worst[1]:id_rand[6];
-
+    
         worst[3] = (*worst[0].second>*worst[1].second)?worst[1]:worst[0];
 
         //delete worst
