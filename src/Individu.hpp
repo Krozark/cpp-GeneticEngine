@@ -25,7 +25,7 @@ class Individu
         friend std::ostream& operator<<(std::ostream& output,const Individu& self)
         {
             for(int i=0;i<DIM;++i)
-                output<<i<<": <"<<self.coef[i]<<"> ";
+                output<<"["<<i<<"]: <"<<self.coef[i]<<"> ";
             return output;
         };
 

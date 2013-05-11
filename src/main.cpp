@@ -27,7 +27,7 @@ int main(int argc,char * argv[])
     float mutation_taux = 0.01;
     int pop_child = 1000;
 
-    int nb_threads = 50;
+    int nb_threads = -1;
 
     /*
     Individu<2>::benchmarks = six_hump;
@@ -58,7 +58,7 @@ int main(int argc,char * argv[])
     Individu<1>::bornes[0][Individu<1>::MAX] = 500;
 
     GeneticEngine<Individu<1> > engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
-    engine.setTimeout(5000);
+    engine.setTimeout(10);
     engine.setEvaluateAll(false);
     bool (*stop)(const Individu<1>&) = [](const Individu<1>& best)
     {
