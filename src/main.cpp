@@ -5,6 +5,11 @@
 
 #include "benchmarks-func.hpp"
 
+#include <stdlib.h>
+#include <stdio.h>
+#define NUM_POINTS 5
+#define NUM_COMMANDS 2
+
 using namespace std;
 
 
@@ -58,7 +63,7 @@ int main(int argc,char * argv[])
     Individu<1>::bornes[0][Individu<1>::MAX] = 500;
 
     GeneticEngine<Individu<1> > engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
-    engine.setTimeout(10);
+    engine.setTimeout(3000);
     engine.setEvaluateAll(false);
     bool (*stop)(const Individu<1>&) = [](const Individu<1>& best)
     {
@@ -71,10 +76,32 @@ int main(int argc,char * argv[])
     //engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
 
 
-    Individu<1>* best = engine.run_while(stop);
-    //Individu<1>* best = engine.run(20);
+    //Individu<1>* best = engine.run_while(stop);
+    Individu<1>* best = engine.run(200);
+
 
     delete best;
+    std::cout<<"plop"<<std::endl;
+    
+    /*char * commandsForGnuplot[] = {"set title \"TITLEEEEE\"", "plot 'data.temp'"};
+    double xvals[NUM_POINTS] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    double yvals[NUM_POINTS] = {5.0 ,3.0, 1.0, 3.0, 5.0};
+    FILE * temp = fopen("data.temp", "w");
+    FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
+    fprintf(gnuplotPipe, "plot '-' \n");
+    int i;
 
+    for (int i = 0; i < NUM_POINTS; i++)
+    {
+        fprintf(gnuplotPipe, "%lf %lf\n", xvals[i], yvals[i]);
+    }
+
+    fprintf(gnuplotPipe, "e");
+
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+*/
+
+    exit(0);
     return 0;
 };

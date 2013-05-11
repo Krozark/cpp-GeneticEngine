@@ -73,6 +73,7 @@ void GeneticEngine<T>::wait()
             running = islands[i]->thread.joinable() and islands[i]->running;
     }
     while(running);
+    std::cout<<"GeneticEngine::wait()"<<std::endl;
     //stop all islands
     stop();
     //wait the end of the sender thread
@@ -121,7 +122,6 @@ void GeneticEngine<T>::send()
         //wait a moment for the other send
         std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
     }
-    exit(0);
 };
 
 template<class T>
@@ -137,6 +137,8 @@ void GeneticEngine<T>::send(T* id,GeneticThread<T>& dest)
 template<class T>
 T* GeneticEngine<T>::end()
 {
+
+    std::cout<<"end"<<std::endl;
     T* best = islands[0]->get_best();
     for(int i=1;i<size;++i)
     {

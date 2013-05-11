@@ -151,7 +151,6 @@ void GeneticThread<T>::end()
     save("last");
     mutex.unlock();
     running = false;
-    exit(0);
 };
 
 template <typename T>
