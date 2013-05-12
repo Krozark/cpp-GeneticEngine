@@ -217,6 +217,7 @@ int main(int argc,char * argv[])
 
         GeneticEngine<Individu<2> > engine(nb_threads,mutation_taux,filename,pop_size,pop_child);
         engine.setTimeout(1000);
+        engine.setEvaluateAll(eval);
 
         bool (*stop)(const Individu<2>&,const int) = [](const Individu<2>& best,const int generation)
         {
@@ -237,9 +238,11 @@ int main(int argc,char * argv[])
             cerr<<(clock() - start)/CLOCKS_PER_SEC<<endl;
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
-
-        engine.setCreationMode(GeneticEngine<Individu<2> >::CreationMode::TOURNAMENT);
-        engine.setReductionMode(GeneticEngine<Individu<2> >::ReductionMode::TOURNAMENT);
+        
+        if(creat == "perso")
+            engine.setCreationMode(GeneticEngine<Individu<2> >::CreationMode::STUPIDE);
+        if(del == "perso")
+            engine.setReductionMode(GeneticEngine<Individu<2> >::ReductionMode::STUPIDE);
 
         start = clock();
         Individu<2>* best = engine.run_while(stop);
@@ -256,7 +259,7 @@ int main(int argc,char * argv[])
 
         GeneticEngine<Individu<1> > engine(nb_threads,mutation_taux,filename,pop_size,pop_child);
         engine.setTimeout(1000);
-        engine.setEvaluateAll(false);
+        engine.setEvaluateAll(eval);
         bool (*stop)(const Individu<1>&,const int) = [](const Individu<1>& best,const int generation)
         {
             static volatile int i=0;
@@ -277,8 +280,10 @@ int main(int argc,char * argv[])
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
 
-        //engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::STUPIDE);
-        //engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
+        if(creat == "perso")
+            engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::STUPIDE);
+        if(del == "perso")
+            engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
 
         start = clock();
         Individu<1>* best = engine.run_while(stop);
