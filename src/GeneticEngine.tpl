@@ -48,7 +48,7 @@ T* GeneticEngine<T>::run(const int nb_generation/*,Args& ... args*/)
 
 template <class T>
 //template <typename ... Args>
-T* GeneticEngine<T>::run_while(bool (*f)(const T&)/*,Args& ... args*/)
+T* GeneticEngine<T>::run_while(bool (*f)(const T&,const int)/*,Args& ... args*/)
 {
     for(int i=0;i<size;++i)
         islands[i]->run_while(f/*,args ...*/);
@@ -73,7 +73,6 @@ void GeneticEngine<T>::wait()
             running = islands[i]->thread.joinable() and islands[i]->running;
     }
     while(running);
-    std::cout<<"GeneticEngine::wait()"<<std::endl;
     //stop all islands
     stop();
     //wait the end of the sender thread
@@ -137,8 +136,6 @@ void GeneticEngine<T>::send(T* id,GeneticThread<T>& dest)
 template<class T>
 T* GeneticEngine<T>::end()
 {
-
-    std::cout<<"end"<<std::endl;
     T* best = islands[0]->get_best();
     for(int i=1;i<size;++i)
     {

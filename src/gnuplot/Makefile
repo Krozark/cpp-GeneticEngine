@@ -1,7 +1,7 @@
 
 
 CC 		= gcc
-CFLAGS 	= -O3 -I./src
+CFLAGS 	= -O3 -I./src -fpermissive
 RM		= rm -f
 
 default:	gnuplot_i.o

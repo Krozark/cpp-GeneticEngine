@@ -45,11 +45,13 @@ class GeneticThread
         * run until f return true
         */
         
-        void run_while(bool (*f)(const T&));
+        void run_while(bool (*f)(const T&,const int));
 
         T* get_best()const {return best;};
 
         inline void stop(){running=false;}
+
+        inline int get_size()const {return size;};
 
         /****** FONCTIONEMENT MODE ************/
 

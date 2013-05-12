@@ -2,23 +2,42 @@
 #include "GeneticEngine.hpp"
 
 #include "random.hpp"
-
 #include "benchmarks-func.hpp"
+#include "gnuplot/src/gnuplot_i.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#define NUM_POINTS 5
-#define NUM_COMMANDS 2
 
 using namespace std;
 
+gnuplot_ctrl* h1;
+std::vector<double> points[2];
+int gnuplottimeout;
+
      
-#define GNUPLOT_PATH "/usr/bin/gnuplot"
-
-
 int main(int argc,char * argv[])
 {
     rand_init();
+    h1 = gnuplot_init();
+    int gnuplottimeout = 50;
+
+    /*int i=1;
+    while(i<argc)
+    {
+        string arg = string(argv[i]);
+        if (arg =="-pop-total")
+        {
+            if(++i <argc)
+            {
+                pop_size = atoi(argv[i]);
+            }
+            else
+                SHOW_ARGS("Pas de population de précisée")
+        }
+    }*/
+    
+    
+
     cout.precision(10);
     {
         std::vector<double> v = {0.0898,-0.7126};
@@ -68,8 +87,20 @@ int main(int argc,char * argv[])
     GeneticEngine<Individu<1> > engine(nb_threads,mutation_taux,"filename",pop_size,pop_child);
     engine.setTimeout(3000);
     engine.setEvaluateAll(false);
-    bool (*stop)(const Individu<1>&) = [](const Individu<1>& best)
+    bool (*stop)(const Individu<1>&,const int) = [](const Individu<1>& best,const int generation)
     {
+        static volatile int i=0;
+        points[0].emplace_back(generation);
+        points[1].emplace_back(best.get_score());
+
+        if(++i == 1)
+        {
+            gnuplot_resetplot(h1) ;
+            gnuplot_setstyle(h1, "lines") ;
+            gnuplot_plot_xy(h1, &points[0][0], &points[1][0], points[0].size(), "best individu");
+        }
+        else if (i >= 50)
+            i = 0;
         //auto coef = best.getCoef();
         //return (coef[0] == 0.0898 and coef[1] == -0.7126);
         return false;
@@ -79,49 +110,11 @@ int main(int argc,char * argv[])
     //engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
 
 
-    //Individu<1>* best = engine.run_while(stop);
-    Individu<1>* best = engine.run(200);
-
-
+    Individu<1>* best = engine.run_while(stop);
+    //Individu<1>* best = engine.run(200);
     delete best;
-    std::cout<<"plop"<<std::endl;
-
-
-     
-    FILE *gp;
-
-    gp = popen(GNUPLOT_PATH, "w");
-    if(gp == NULL){
-        fprintf(stderr, "Oops, I can't find %s.", GNUPLOT_PATH);
-         exit(EXIT_FAILURE);
-    }
-    fprintf(gp, "cd '~/Desktop'\n load \"config\"\n");
-      fflush(gp); /* On oublie pas le buffer. */
-      getchar();
-      pclose(gp);
-     
-
-    
-    
-/*    double xvals[NUM_POINTS] = {1.0, 2.0, 3.0, 4.0, 5.0};
-    double yvals[NUM_POINTS] = {5.0 ,3.0, 1.0, 3.0, 5.0};
-    FILE * temp = fopen("data.temp", "w");
-    FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
-
-    fprintf(gnuplotPipe, "plot '-' \n");
-
-    for (int i = 0; i < NUM_POINTS; i++)
-    {
-        fprintf(gnuplotPipe, "%lf %lf\n", xvals[i], yvals[i]);
-    }
-    fprintf(gnuplotPipe, "e");
-
-    fflush(gnuplotPipe);
-    */
-
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-
 
     exit(0);
     return 0;

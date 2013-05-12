@@ -51,7 +51,7 @@ void GeneticThread<T>::run(const int nb_generation)
         //eval initiale
         this->init();
         //boucle de génération
-        for(int generation=0;generation<nb_generation and this->running ;++generation)
+        while(generation<nb_generation and this->running)
             this->corps();
         this->end();
     };
@@ -61,18 +61,18 @@ void GeneticThread<T>::run(const int nb_generation)
 };
 
 template <typename T>
-void GeneticThread<T>::run_while(bool (*f)(const T&))
+void GeneticThread<T>::run_while(bool (*f)(const T&,const int))
 {
 
     //will be execute in thread
-    auto lambda = [&](bool (*f)(const T&))
+    auto lambda = [&](bool (*f)(const T&,const int))
     {
         //eval initiale
         this->init();
         do
         {
             this->corps();
-        }while ((not f(*this->best)) and this->running);
+        }while ((not f(*this->best,this->generation)) and this->running);
         this->end();
     };
 
