@@ -236,7 +236,7 @@ int main(int argc,char * argv[])
             if(slowtime >0)
                 std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
             cerr<<float(clock() - start)/CLOCKS_PER_SEC<<" sec"<<endl;
-            return (clock() - start)/CLOCKS_PER_SEC > runtime;
+            return float(clock() - start)/CLOCKS_PER_SEC > runtime;
         };
         
         if(creation == "perso")
@@ -278,7 +278,7 @@ int main(int argc,char * argv[])
             if(slowtime >0)
                 std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
             cerr<<float(clock() - start)/CLOCKS_PER_SEC<<" sec"<<endl;
-            return (clock() - start)/CLOCKS_PER_SEC > runtime;
+            return float(clock() - start)/CLOCKS_PER_SEC > runtime;
         };
 
         if(creation == "perso")
