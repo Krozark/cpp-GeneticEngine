@@ -18,6 +18,9 @@ using namespace std;
     <<"\t -mutation (defaut = 1 %) [entre 0 et 100]) taux de mutation"<<endl\
     <<"\t -prefix prefix du nom de fichier de log (default = [fonction])"<<endl\
     <<"\t -fonction (defaut = schwefel) [schwefel/six_hump] "<<endl\
+    <<"\t -creat (defaut = tournament) [perso/tournament] creation mode"<<endl\
+    <<"\t -delete (defaut = tournament) [perso/tournament] delete mode delete mode"<<endl\
+    <<"\t -eval (defaujt = 0) [1/0] always eval new"<<endl\
     <<"\t -threads (defaut = 1) [-1 pour le max possible] nombre de thread à utiliser"<<endl\
     <<"\t -runtime (defaut = 180) temps en seconde d'exicution"<<endl\
     <<"\t -slow (default = -1) permet de faire une pause de X ms à la fin de chaque génération (pour voir la courbe)"<<endl\
@@ -51,6 +54,9 @@ int main(int argc,char * argv[])
     int nb_threads = 1;
     runtime = 3*60;
     slowtime = -1;
+    string creation = "tournament";
+    string del = "tournament";
+    bool eval = false;
     
     {
         int i=1;
@@ -139,7 +145,34 @@ int main(int argc,char * argv[])
             {
                 if(++i < argc)
                 {
-                    slow = atoi(argv[i]);
+                    slowtime = atoi(argv[i]);
+                }
+                else
+                    SHOW_ARGS("Pas de nombre de précisé");
+            }
+            else if(arg == "-creat")
+            {
+                if(++i < argc)
+                {
+                    creation = argv[i];
+                }
+                else
+                    SHOW_ARGS("Pas de mode de précisé");
+            }
+            else if(arg == "-delete")
+            {
+               if(++i < argc)
+               {
+                   del = argv[i];
+               }
+               else
+                   SHOW_ARGS("Pas de mode de précisé");
+            }
+            else if (arg == "-eval")
+            {
+                if(++i < argc)
+                {
+                    eval = (atoi(argv[i])==1);
                 }
                 else
                     SHOW_ARGS("Pas de nombre de précisé");
@@ -162,10 +195,13 @@ int main(int argc,char * argv[])
     <<"\n mutation: "<<mutation_taux*100
     <<"\n prefix: "<<filename
     <<"\n fonction: "<<((benchmarks==schwefel)?"schwefel":"six_hump")
+    <<"\n creat: "<<creation
+    <<"\n delelte: "<<del
+    <<"\n eval: "<<eval
     <<"\n threads: "<<nb_threads
     <<"\n runtime: "<<runtime
+    <<"\n slow: "<<slowtime
     <<endl;
-    
 
     if(benchmarks == six_hump)
     {
@@ -182,7 +218,7 @@ int main(int argc,char * argv[])
         GeneticEngine<Individu<2> > engine(nb_threads,mutation_taux,filename,pop_size,pop_child);
         engine.setTimeout(1000);
 
-        bool (*stop)(const Individu<2>&) = [](const Individu<2>& best)
+        bool (*stop)(const Individu<2>&,const int) = [](const Individu<2>& best,const int generation)
         {
             static volatile int i=0;
             points[0].emplace_back(generation);
@@ -196,8 +232,8 @@ int main(int argc,char * argv[])
             }
             else if (i >= 50)
                 i = 0;
-            if(slow >0)
-                std::this_thread::sleep_for(std::chrono::milliseconds(slow));
+            if(slowtime >0)
+                std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
             cerr<<(clock() - start)/CLOCKS_PER_SEC<<endl;
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
@@ -235,8 +271,8 @@ int main(int argc,char * argv[])
             }
             else if (i >= 50)
                 i = 0;
-            if(slow >0)
-                std::this_thread::sleep_for(std::chrono::milliseconds(slow));
+            if(slowtime >0)
+                std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
             cerr<<(clock() - start)/CLOCKS_PER_SEC<<endl;
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
