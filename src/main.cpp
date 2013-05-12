@@ -239,7 +239,7 @@ int main(int argc,char * argv[])
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
         
-        if(creat == "perso")
+        if(creation == "perso")
             engine.setCreationMode(GeneticEngine<Individu<2> >::CreationMode::STUPIDE);
         if(del == "perso")
             engine.setReductionMode(GeneticEngine<Individu<2> >::ReductionMode::STUPIDE);
@@ -280,7 +280,7 @@ int main(int argc,char * argv[])
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
 
-        if(creat == "perso")
+        if(creation == "perso")
             engine.setCreationMode(GeneticEngine<Individu<1> >::CreationMode::STUPIDE);
         if(del == "perso")
             engine.setReductionMode(GeneticEngine<Individu<1> >::ReductionMode::STUPIDE);
