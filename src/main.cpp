@@ -12,6 +12,9 @@
 
 using namespace std;
 
+     
+#define GNUPLOT_PATH "/usr/bin/gnuplot"
+
 
 int main(int argc,char * argv[])
 {
@@ -82,25 +85,43 @@ int main(int argc,char * argv[])
 
     delete best;
     std::cout<<"plop"<<std::endl;
+
+
+     
+    FILE *gp;
+
+    gp = popen(GNUPLOT_PATH, "w");
+    if(gp == NULL){
+        fprintf(stderr, "Oops, I can't find %s.", GNUPLOT_PATH);
+         exit(EXIT_FAILURE);
+    }
+    fprintf(gp, "cd '~/Desktop'\n load \"config\"\n");
+      fflush(gp); /* On oublie pas le buffer. */
+      getchar();
+      pclose(gp);
+     
+
     
-    /*char * commandsForGnuplot[] = {"set title \"TITLEEEEE\"", "plot 'data.temp'"};
-    double xvals[NUM_POINTS] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    
+/*    double xvals[NUM_POINTS] = {1.0, 2.0, 3.0, 4.0, 5.0};
     double yvals[NUM_POINTS] = {5.0 ,3.0, 1.0, 3.0, 5.0};
     FILE * temp = fopen("data.temp", "w");
     FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
+
     fprintf(gnuplotPipe, "plot '-' \n");
-    int i;
 
     for (int i = 0; i < NUM_POINTS; i++)
     {
         fprintf(gnuplotPipe, "%lf %lf\n", xvals[i], yvals[i]);
     }
-
     fprintf(gnuplotPipe, "e");
+
+    fflush(gnuplotPipe);
+    */
 
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-*/
+
 
     exit(0);
     return 0;
