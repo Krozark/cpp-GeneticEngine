@@ -235,7 +235,7 @@ int main(int argc,char * argv[])
                 i = 0;
             if(slowtime >0)
                 std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
-            cerr<<(clock() - start)/CLOCKS_PER_SEC<<endl;
+            cerr<<float(clock() - start)/CLOCKS_PER_SEC<<" sec"<<endl;
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
         
@@ -247,6 +247,7 @@ int main(int argc,char * argv[])
         start = clock();
         Individu<2>* best = engine.run_while(stop);
         delete best;
+        exit(0);
     }
     else if (benchmarks == schwefel)
     {
@@ -276,7 +277,7 @@ int main(int argc,char * argv[])
                 i = 0;
             if(slowtime >0)
                 std::this_thread::sleep_for(std::chrono::milliseconds(slowtime));
-            cerr<<(clock() - start)/CLOCKS_PER_SEC<<endl;
+            cerr<<float(clock() - start)/CLOCKS_PER_SEC<<" sec"<<endl;
             return (clock() - start)/CLOCKS_PER_SEC > runtime;
         };
 
@@ -288,8 +289,8 @@ int main(int argc,char * argv[])
         start = clock();
         Individu<1>* best = engine.run_while(stop);
         delete best;
+        exit(0);
     }
 
-    exit(0);
     return 0;
 };
