@@ -64,7 +64,7 @@ int main(int argc,char * argv[])
         while(i<argc)
         {
             string arg = string(argv[i]);
-            if (arg =="-pop-size")
+            if (arg =="-pop-total")
             {
                 if(++i <argc)
                 {
@@ -179,7 +179,7 @@ int main(int argc,char * argv[])
                     SHOW_ARGS("Pas de nombre de précisé");
             }
             else
-                SHOW_ARGS("Mauvais argument");
+                SHOW_ARGS(string(argv[i])+": Mauvais argument");
             ++i;
         }
 
