@@ -50,6 +50,6 @@ double six_hump(const std::vector<double>& dim)
 {
     assert(dim.size() == 2);
 
-    return (4-2.1*power<2>::of(dim[0])+power<4>::of(dim[0])/3)*power<2>::of(dim[0])+ dim[0]*dim[1]+(-4 + 4*power<2>::of(dim[1]))*power<2>::of(dim[1]);
+    return (4-2.1*power<2>::of(dim[0])+power<4>::of(dim[0])/3.0)*power<2>::of(dim[0])+ dim[0]*dim[1]+(-4 + 4*power<2>::of(dim[1]))*power<2>::of(dim[1]);
 }
    

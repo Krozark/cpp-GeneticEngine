@@ -18,7 +18,7 @@ using namespace std;
     <<"\t -mutation (defaut = 1 %) [entre 0 et 100]) taux de mutation"<<endl\
     <<"\t -prefix prefix du nom de fichier de log (default = [fonction])"<<endl\
     <<"\t -fonction (defaut = schwefel) [schwefel/six_hump] "<<endl\
-    <<"\t -creat (defaut = tournament) [perso/tournament] creation mode"<<endl\
+    <<"\t -create (defaut = tournament) [perso/tournament] creation mode"<<endl\
     <<"\t -delete (defaut = tournament) [perso/tournament] delete mode delete mode"<<endl\
     <<"\t -eval (defaujt = 0) [1/0] always eval new"<<endl\
     <<"\t -threads (defaut = 1) [-1 pour le max possible] nombre de thread à utiliser"<<endl\
@@ -57,6 +57,7 @@ int main(int argc,char * argv[])
     string creation = "tournament";
     string del = "tournament";
     bool eval = false;
+
     
     {
         int i=1;
@@ -150,7 +151,7 @@ int main(int argc,char * argv[])
                 else
                     SHOW_ARGS("Pas de nombre de précisé");
             }
-            else if(arg == "-creat")
+            else if(arg == "-create")
             {
                 if(++i < argc)
                 {
@@ -195,7 +196,7 @@ int main(int argc,char * argv[])
     <<"\n mutation: "<<mutation_taux*100
     <<"\n prefix: "<<filename
     <<"\n fonction: "<<((benchmarks==schwefel)?"schwefel":"six_hump")
-    <<"\n creat: "<<creation
+    <<"\n create: "<<creation
     <<"\n delelte: "<<del
     <<"\n eval: "<<eval
     <<"\n threads: "<<nb_threads
