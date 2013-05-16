@@ -18,7 +18,7 @@ GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filena
 
     islands = new  GeneticThread<T>*[size];
     for(int i=0;i<size;++i)
-        islands[i] = new GeneticThread<T>(taux_mut,filename,pop_size/size,pop_child/size,std::forward<Args>(args)...);
+        islands[i] = new GeneticThread<T>(taux_mut,filename,pop_size/size,pop_child/size,args ...);
 
     setTimeout(1000);
 
