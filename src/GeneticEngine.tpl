@@ -61,6 +61,7 @@ T* GeneticEngine<T>::run_while(bool (*f)(const T&,const int)/*,Args& ... args*/)
 template<class T>
 void GeneticEngine<T>::wait()
 {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     running = true;
     //sender thread
     void (GeneticEngine<T>::*func)() = &GeneticEngine<T>::send;

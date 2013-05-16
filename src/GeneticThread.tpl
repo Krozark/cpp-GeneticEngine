@@ -106,7 +106,6 @@ template <typename T>
 void GeneticThread<T>::corps()
 {
     mutex.lock();
-    
     // creat children
     (this->*creatChildFunc)();
 
