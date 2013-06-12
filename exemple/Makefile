@@ -9,10 +9,10 @@ all: main.exe
 	@cp $@ "$(OBJ_DIR)"
 
 
-ex1.exe: ex1/main.cpp ex1/Individu.hpp
+ex1.exe: ex1/main.cpp ex1/Individu.hpp ../obj/GeneticThread.o
 	$(CC) $^ $(FLAGS) -o $@
 
-ex2.exe: ex2/main.cpp ex2/Individu.hpp ../obj/gnuplot_i.o ../obj/benchmarks-func.o
+ex2.exe: ex2/main.cpp ex2/Individu.hpp ../obj/gnuplot_i.o ../obj/benchmarks-func.o ../obj/GeneticThread.o
 	#"$(TOP)/src/GeneticThread.o" "$(TOP)/src/benchmarks-func.o"
 	$(CC) $^ $(FLAGS) -o $@
 
