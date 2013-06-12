@@ -1,9 +1,9 @@
 #include "Individu.hpp"
-#include "GeneticEngine.hpp"
+#include <src/GeneticEngine.hpp>
 
-#include "random.hpp"
-#include "benchmarks-func.hpp"
-#include "gnuplot/src/gnuplot_i.h"
+#include <src/random.hpp>
+#include <src/benchmarks-func.hpp>
+#include <src/gnuplot/src/gnuplot_i.h>
 
 #include <stdlib.h>
 #include <stdio.h>

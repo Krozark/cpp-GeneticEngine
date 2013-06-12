@@ -1,5 +1,5 @@
 export CC = g++
-INCPATH = 
+INCPATH = -I"$(CURDIR)"
 LIBS = -lpthread 
 #-lmysqlcppconn 
 export DEFINES = -DGENETIQUE_SAVE_RESULTS -fpermissive 
@@ -10,7 +10,7 @@ export OBJ_DIR = $(TOP)/obj
 SRC = $(wildcard *.c*)
 OBJ = $(SRC:.cpp=.o) $(SRC:*.cpp=.o)
 
-SUBDIRS = src obj
+SUBDIRS = src exemple obj
 
 export EXEC = main.exe
 

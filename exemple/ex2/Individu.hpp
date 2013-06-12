@@ -1,7 +1,7 @@
 #ifndef INDIVIDU_HPP
 #define INDIVIDU_HPP
 
-#include "random.hpp"
+#include <src/random.hpp>
 
 #include <iostream>
 #include <vector>
