@@ -8,7 +8,7 @@
 
 template <class T>
 template <typename ... Args>
-GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args) : size(nb_threads)
+GeneticEngine<T>::GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args&& ... args) : size(nb_threads)
 {
     if (size <= 0)
         size = std::thread::hardware_concurrency();

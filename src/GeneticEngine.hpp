@@ -1,7 +1,7 @@
 #ifndef GENETICENGINE_HPP
 #define GENETICENGINE_HPP
 
-#include "GeneticThread.hpp"
+#include <GeneticEngine/GeneticThread.hpp>
 
 /* T is Individu Class  */
 template <class T>
@@ -9,7 +9,7 @@ class GeneticEngine
 {
     public:
         template <typename ... Args>
-        GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args);
+        GeneticEngine(int nb_threads,float taux_mut,std::string filename,int pop_size,int pop_child,Args&& ... args);
 
         ~GeneticEngine();
 
@@ -48,6 +48,6 @@ class GeneticEngine
         T* end();
 };
 
-#include "GeneticEngine.tpl"
+#include <GeneticEngine/GeneticEngine.tpl>
 
 #endif

@@ -13,7 +13,7 @@ struct gt_ptr : std::binary_function<T,T,bool>
 
 template <typename T>
 template <typename ... Args>
-GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix("best/"+filename), running(false)
+GeneticThread<T>::GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child, Args&& ... args) : size(pop_size), size_child(pop_child), mutation_taux(taux_mut), generation(0), prefix("best/"+filename), running(false)
 {
     mutex.lock();
     individus = new T*[size+size_child];
@@ -37,7 +37,7 @@ GeneticThread<T>::~GeneticThread()
         if(individus[i] and individus[i] != best)
         {
             delete individus[i];
-            individus[i] = 0;
+            individus[i] = nullptr;
         }
     delete [] individus;
 };
@@ -115,7 +115,7 @@ void GeneticThread<T>::corps()
     mutex.unlock();
 
     std::cout<<"["<<thread.get_id()<<"] generation #"<<generation++<<std::endl;
-    #if GENETIQUE_SAVE_RESULTS
+    #ifdef GENETIQUE_SAVE_RESULTS
         save(std::to_string(best->get_score()));
     #endif
 };
@@ -173,7 +173,7 @@ void GeneticThread<T>::save(const std::string& name)
             <<"\n*\tsize: "<<best->size()
             <<"\n*\tgeneration: "<<generation
             <<"\n*/"
-            <<"\n\tbest ="<<*best
+            <<"\n"<<*best
             <<"\n";
         file.close();
         std::cout<<"["<<thread.get_id()<<"] "<<format<<" best("<<best->get_score()<<"): "<<*best<<std::endl<<std::endl;

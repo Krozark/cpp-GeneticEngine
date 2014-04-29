@@ -8,14 +8,13 @@
 //rondom
 #include <ctime>
 #include <random>
-#include "random.hpp"
+#include <GeneticEngine/random.hpp>
 //multi threading
 #include <mutex>
 #include <thread>
-
-
-
 #include <iostream>
+
+#define GENETIQUE_SAVE_RESULTS
 
 template <class T> class GeneticEngine;
 
@@ -30,7 +29,7 @@ class GeneticThread
     *  size_child = number of child
     *  Args ... = argument to T(Args& ... args ) constructor */
         template <typename ... Args>
-        GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child,Args& ... args);
+        GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child,Args&& ... args);
 
         ~GeneticThread();
 
@@ -121,5 +120,5 @@ class GeneticThread
 
 };
 
-#include "GeneticThread.tpl"
+#include <GeneticEngine/GeneticThread.tpl>
 #endif
