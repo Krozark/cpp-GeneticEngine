@@ -78,6 +78,9 @@ void GeneticEngine<T>::wait()
     stop();
     //wait the end of the sender thread
     thread.join();
+
+    for(int i=0;i<size;++i)
+        islands[i]->thread.join();
 };
 
 
