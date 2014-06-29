@@ -29,7 +29,7 @@ class GeneticThread
     *  size_child = number of child
     *  Args ... = argument to T(Args& ... args ) constructor */
         template <typename ... Args>
-        GeneticThread(float taux_mut,std::string filename,int pop_size,int pop_child,Args&& ... args);
+        GeneticThread(int id,float taux_mut,std::string filename,int pop_size,int pop_child,Args&& ... args);
 
         ~GeneticThread();
 
@@ -44,7 +44,7 @@ class GeneticThread
         * run until f return true
         */
         
-        void run_while(bool (*f)(const T&,const int));
+        void run_while(bool (*f)(const T&,int,int id));
 
         T* get_best()const {return best;};
 
@@ -58,6 +58,9 @@ class GeneticThread
 
     private:
         friend class GeneticEngine<T>;
+
+        const int id;
+
         T** individus;
         const int size;
         const int size_child;
@@ -67,7 +70,7 @@ class GeneticThread
         bool initial_evaluation_req;
         T* best;
         /* Fonction to call to create children */
-        void (GeneticThread<T>::*creatChildFunc)();
+        void (GeneticThread<T>::*createChildFunc)();
         /* Fonction to call to  reduce pop */
         void (GeneticThread<T>::*reducePopFunc)();
 
@@ -104,6 +107,7 @@ class GeneticThread
         *  save it in last.res file
         */
         void end();
+
 
         /* save current best in file using << operator */
         void save(const std::string& name);

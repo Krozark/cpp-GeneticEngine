@@ -1,9 +1,9 @@
 #include "Individu.hpp"
-#include <src/GeneticEngine.hpp>
+#include <GeneticEngine/GeneticEngine.hpp>
 
-#include <src/random.hpp>
-#include <src/benchmarks-func.hpp>
-#include <src/gnuplot/src/gnuplot_i.h>
+#include <GeneticEngine/random.hpp>
+#include <GeneticEngine/benchmarks-func.hpp>
+#include <GeneticEngine/gnuplot/src/gnuplot_i.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -220,7 +220,7 @@ int main(int argc,char * argv[])
         engine.setTimeout(1000);
         engine.setEvaluateAll(eval);
 
-        bool (*stop)(const Individu<2>&,const int) = [](const Individu<2>& best,const int generation)
+        bool (*stop)(const Individu<2>&,const int,int) = [](const Individu<2>& best,const int generation,int id)
         {
             static volatile int i=0;
             points[0].emplace_back(generation);

@@ -1,5 +1,5 @@
-#include "src/random.hpp"
-#include "src/GeneticEngine.hpp"
+#include "GeneticEngine/random.hpp"
+#include "GeneticEngine/GeneticEngine.hpp"
 
 #include <string>
 

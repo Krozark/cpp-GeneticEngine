@@ -1,6 +1,6 @@
 export CC = g++
 INCPATH = -I"$(CURDIR)"
-LIBS = -lpthread 
+LIBS = -lpthread -lutils
 #-lmysqlcppconn 
 export DEFINES = -DGENETIQUE_SAVE_RESULTS -fpermissive 
 export FLAGS = -g -std=c++0x -o3 $(INCPATH) $(LIBS) $(DEFINES)
@@ -10,7 +10,7 @@ export OBJ_DIR = $(TOP)/obj
 SRC = $(wildcard *.c*)
 OBJ = $(SRC:.cpp=.o) $(SRC:*.cpp=.o)
 
-SUBDIRS = src exemple obj
+SUBDIRS = GeneticEngine exemple obj
 
 export EXEC = main.exe
 

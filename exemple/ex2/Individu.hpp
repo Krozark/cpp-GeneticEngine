@@ -1,7 +1,7 @@
 #ifndef INDIVIDU_HPP
 #define INDIVIDU_HPP
 
-#include <src/random.hpp>
+#include <GeneticEngine/random.hpp>
 
 #include <iostream>
 #include <vector>

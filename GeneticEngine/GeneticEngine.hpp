@@ -17,7 +17,7 @@ class GeneticEngine
         T* run(const int nb_generation/*,Args& ... args*/);
 
         //template <typename ... Args>
-        T* run_while(bool (*f)(const T&,const int)/*,Args& ... args*/);
+        T* run_while(bool (*f)(const T&,int,int)/*,Args& ... args*/);
 
         void stop();
         

@@ -1,6 +1,6 @@
-#include <src/random.hpp>
+#include <GeneticEngine/random.hpp>
 #include "Individu.hpp"
-#include <src/GeneticEngine.hpp>
+#include <GeneticEngine/GeneticEngine.hpp>
 
 #include <string>
 
@@ -21,7 +21,7 @@ int main(int argc,char * argv[])
     engine.setTimeout(1000);
     engine.setEvaluateAll(false);
 
-    bool(*stop)(const MyType&, const int) = [](const MyType& best, const int generation)
+    bool(*stop)(const MyType&, const int,int) = [](const MyType& best, const int generation,int id)
     {
         return generation > 200;
     };
